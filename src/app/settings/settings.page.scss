@@ -1,0 +1,246 @@
+.background {
+    --background: url(../../assets/background.png) no-repeat center center;
+}
+
+.settings-box {
+    max-width: 98%;
+    margin: auto;
+}
+
+ion-text {
+    font-size: 14px;
+    display:block;
+}
+
+.ion-footer-settings {
+  background-color: rgba(0, 0, 0, 0.3);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  top: 2rem;
+  bottom: 2rem;
+  width: 100%;
+  text-align: center;
+  font-size: 15px;
+}
+
+.footer-link{
+  color: white;
+}
+
+.settings-card {
+    border-radius: 25px;
+    background: linear-gradient(to top, #1A94DE 0%, #09498A 100%);
+    margin-top: 2vh;
+    margin-left: 6px;
+    margin-right: 6px;
+    padding-top: 1rem;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 2rem;
+    -webkit-box-shadow: 5px 11px 10px -6px rgba(0, 0, 0, 0.47);
+    box-shadow: 5px 11px 10px -6px rgba(0, 0, 0, 0.47);
+}
+
+.cardContentTitle,
+.cardContent {
+    color: white!important;
+}
+
+.boxheader {
+    font-size: 16px
+}
+
+.boldText {
+    font-weight: 500;
+}
+
+.content {
+  margin-top: 2rem;
+}
+
+.borderRight {
+    border-right: 1px solid white;
+}
+
+.paddingleft {
+    padding-left: 10px;
+}
+
+.cardContentTitle {
+    border-bottom: 1px solid white;
+}
+
+ion-card {
+    background-color: #38a9ed;
+    -webkit-box-shadow: 0px 5px 7px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0px 5px 7px 2px rgba(0, 0, 0, 0.24);
+    border-radius: 5px;
+    padding: 0;
+}
+
+.lightBox {
+    padding: 0.25rem 10px;
+    background: #38a9ed
+}
+
+.settings-button {
+    width: 98%;
+    margin:2rem auto 0rem auto;
+    padding: 1rem 0.5rem;
+    background: white;
+    color: #09498A;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 50px;
+    -webkit-box-shadow: 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+.lightButton {
+    font-weight: 500;
+    padding: 0.5rem 0.5rem;
+}
+
+.settings-button-inactive {
+    -webkit-box-shadow: inset 5px 11px 10px -6px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 5px 11px 10px -6px rgba(0, 0, 0, 0.3);
+    background: #09498A;
+    color: white;
+}
+
+.settings-button-active {
+    background: #1A94DE;
+    color: white;
+}
+
+.settings-button-primary {
+    color: #09498A;
+    margin:2rem auto 0rem auto;
+    width: 100%;
+    height: 3rem;
+    letter-spacing: normal;
+    font-size: 0.9rem;
+    font-weight: 600;
+    -webkit-box-shadow: 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+}
+
+.settings-button-primary::part(native) {
+    border-radius: 50px;
+    padding: 1rem 0.5rem;
+}
+
+.borderBottom {
+    border-bottom: 1px solid white;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.settingsInputText {
+    border-radius: 20px;
+    width: 100%;
+}
+
+.settings-header-title {
+    margin: 2rem auto;
+    color: white;
+    font-weight: bolder;
+    font-size: 16px;
+}
+
+.button-background {
+    background: white;
+    border-radius: 15px;
+    padding: 3px;
+}
+
+.cardContentLine {
+    margin: 0;
+    padding: 0;
+}
+
+.iconbg {
+    background: linear-gradient(to top, #1A94DE 0%, #09498A 100%);
+    display: inline-block;
+    width: 3rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.2rem;
+    border-radius: 100%;
+    font-size: 3;
+    color: white;
+    text-align: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 22px;
+    text-align: center;
+    margin-top: -1.5rem;
+    font-weight: 500
+}
+
+.background {
+    padding-top: 1rem;
+}
+
+.iconcontainer {
+    text-align: right;
+    margin-right: 1rem;
+    margin-top: 2.5rem;
+}
+
+input {
+    color: #09498A;
+    background-color: white!important;
+    -webkit-box-shadow: inset 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0px 7px 6px -3px rgba(0, 0, 0, 0.4);
+    height: 2rem;
+    text-align: center;
+}
+
+ion-select {
+    border-radius: 20px;
+    background: white;
+    height: 1.6rem;
+    max-height: 1.6rem;
+    min-height: 1.6rem;
+    width: 100%;
+    text-align: center;
+    color: black;
+    background-color: white!important;
+    padding-right: 0.5rem;
+}
+
+.oowv_alert.success {
+    width: fit-content;
+    margin: 0 auto;
+}
+
+.oowv_alert.success {
+    color:#90f990;
+}
+
+.oowv_alert.fail {
+    color:#ff1818;
+}
+
+.oowv_icon {
+    font-size: 1rem;
+    vertical-align: text-top;
+}
+
+.oowv_icon.abort {
+}
+
+.ipInput {}
+
+.recommendText {
+    padding: 10px;
+    text-align: center;
+    font-size: 14px
+}
+
+.connectionCard {
+    padding-bottom: 1rem;
+}

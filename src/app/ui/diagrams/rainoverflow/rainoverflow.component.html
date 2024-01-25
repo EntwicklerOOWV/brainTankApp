@@ -1,0 +1,21 @@
+<div class="diagram" id="">
+    <ion-card class="waterlevel-card">
+        <ion-card-header>
+
+            <ion-list>
+                <ion-item>
+                    <ion-card-title>Übergelaufene Regenmenge</ion-card-title>
+
+                    <ion-select class="timeframeselect" [(ngModel)]="selectedTimeframeWaterlevel" aria-label="timeframe_waterlevel" placeholder="{{selectedTimeframeWaterlevel.value}}" (ionChange)="handleChange($event)">
+
+                        <ion-select-option *ngFor="let t of timeframes" [value]="t">{{t.value}}</ion-select-option>
+
+                    </ion-select>
+                </ion-item>
+            </ion-list>
+        </ion-card-header>
+        <ion-card-content>
+            <canvas #barChartRainOverflow></canvas>
+        </ion-card-content>
+    </ion-card>
+</div>

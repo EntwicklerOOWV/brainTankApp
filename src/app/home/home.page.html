@@ -1,0 +1,207 @@
+<ion-content [fullscreen]="true" class="background">
+    <div class="iconcontainer">
+        <div class="iconbg" [routerLink]="['/settings']">
+            <ion-icon name="settings-outline" size="large"></ion-icon>
+        </div>
+    </div>
+    <div class="page-title">Mein Dashboard</div>
+
+    <div class="terms-settings-card" *ngIf="!termsAccepted">
+    <p class="terms-description">
+      <ion-text color="light">Datenschutz- und Nutzungsbedingungen</ion-text>
+    </p>
+    <!--      <ion-button color="light" class="settings-button-primary" (click)="toggleTerms()">Datenschutz- und Nutzungsbedingungen</ion-button>-->
+    <div class="content" *ngIf="!termsAccepted">
+      <div class="terms-text-wrap">
+        <p>
+          Willkommen beim SmartWaterTank!
+        </p>
+
+        <p>
+          Bevor du fortfährst, möchten wir sicherstellen, dass du mit unseren Datenschutz- und Nutzungsbedingungen vertraut bist.
+          Diese legen fest, wie deine Daten gesammelt, verwendet und geschützt werden.
+          Bitte nimm dir einen Moment Zeit, um die folgenden Informationen zu überprüfen:
+        </p>
+
+        <p>
+          Datenschutzbedingungen:<br>
+          <a href="https://www.oowv.de/datenschutz">[Hier klicken, um die Datenschutzbedingungen zu lesen]</a>
+        </p>
+
+        <p>
+          Nutzungsbedingungen:<br>
+          <a href="https://www.oowv.de/nutzungsbedingungen">[Hier klicken, um die Nutzungsbedingungen zu lesen]</a>
+        </p>
+
+        <p>
+
+        </p>
+        Um fortzufahren, klicke bitte auf "Ich stimme zu", nachdem du die Datenschutz- und Nutzungsbedingungen gelesen und akzeptiert hast.
+      </div>
+      <ion-checkbox class="terms-checkbox" id="terms" (ionChange)="onTermsChanged($event)" [checked]="termsAccepted">
+        <div class="terms-text-wrap">
+          Ich stimme zu
+        </div>
+      </ion-checkbox>
+
+    </div>
+  </div>
+
+    <ion-grid class="controlSettings" *ngIf="connectedToController && termsAccepted">
+        <ion-row>
+            <ion-col size="2" class="cardContent">
+                <div class="waterlevelcontainer">
+                    <div class="waterlevelouterbox">
+                        <div class="waterlevelinnerbox" [style.height]="'calc('+(dashboardData.waterlevel*100).toFixed(0)+'% - 2%)'"></div>
+                        <div class="waterlevelinnerboxtext">{{(dashboardData.waterlevel*100).toFixed(0)}}%</div>
+                    </div>
+                </div>
+            </ion-col>
+            <ion-col size="4" class="cardContent ibcc_img"><img src="./assets/images/IBCContainer.png"></ion-col>
+
+            <ion-col size="6" class="cardContent">
+                <div class="settings-card settings-box">
+                    <ion-title color="light"></ion-title>
+
+                    <div class="button-background">
+                        <!--div class="modeButton buttonLeft " [ngClass]="{'buttonActive' : !dashboardData.control_mode}" (click)="dashboardData.control_mode=false">Manuell</div>
+                        <div class="modeButton buttonRight " [ngClass]="{'buttonActive' : dashboardData.control_mode}" (click)="dashboardData.control_mode=true">Auto</div-->
+                        <div class="modeButton buttonLeft " [ngClass]="{'buttonActive' : !dashboardData.control_mode}" (click)="saveDashboardData(false)">Manuell</div>
+                        <div class="modeButton buttonRight " [ngClass]="{'buttonActive' : dashboardData.control_mode}" (click)="saveDashboardData(true)">Auto</div>
+                    </div>
+                    <div>
+                        <ion-range aria-label="Volume" [disabled]="buttonAuto" [(ngModel)]="drainThreshold" (ionKnobMoveEnd)="saveDashboardData(false)"></ion-range>
+                        <div [ngClass]="{'opacity': buttonAuto}" class="slidernumber">Restmenge {{drainThreshold}}%</div>
+                        <!--div class="buttonCyan" (click)="saveDashboardData()">Speichern</div>
+                        <div class="buttonCyan" (click)="drainPartial()">Jetzt entleeren</div>
+                        <div class="buttonCyan" (click)="drainComplete()">Vollständige Entleerung</div
+                        <!-- <ion-button color="lightblue" class="buttonCyan" (click)="saveDashboardData(true)">Speichern</ion-button> -->
+                        <ion-button color="lightblue" class="buttonCyan" [disabled]="buttonAuto" (click)="drainPartial()">Jetzt entleeren</ion-button>
+                        <ion-button color="danger" class="buttonCyan" [disabled]="!isDraining" (click)="stopDrain()">Entleerung stoppen</ion-button>
+                    </div>
+                </div>
+            </ion-col>
+
+            <ion-col size="6" class="">
+                <div class="draintext" *ngIf="dashboardData.drain_advised">
+                    Entleerung wird angeraten
+                </div>
+            </ion-col>
+
+        </ion-row>
+    </ion-grid>
+    <ion-card class="settings-card" *ngIf="connectedToController && termsAccepted">
+        <ion-grid>
+            <ion-row>
+                <ion-col size="12" class="">
+                    <ion-text color="light boldText boxheader">Niederschlagsvorhersage</ion-text>
+                </ion-col>
+            </ion-row>
+            <ion-row *ngIf="!isLocationEmpty()">
+                <ion-col size="4" class="">
+                    <div class="weatherbox">
+                        <div class="weatherboxtitle">in 5 min</div>
+                        <div class="weatherboxsubtitle">Niederschlag</div>
+                        <div class="weatherboxcontent">{{dashboardPrecipitationValues[0]}} mm</div>
+                    </div>
+                </ion-col>
+                <ion-col size="4" class="">
+                    <div class="weatherbox">
+                        <div class="weatherboxtitle">in 1 h</div>
+                        <div class="weatherboxsubtitle">Niederschlag</div>
+                        <div class="weatherboxcontent">{{dashboardPrecipitationValues[1]}} mm</div>
+
+                    </div>
+                </ion-col>
+                <ion-col size="4" class="">
+                    <div class="weatherbox">
+                        <div class="weatherboxtitle">in 2 h</div>
+                        <div class="weatherboxsubtitle">Niederschlag</div>
+                        <div class="weatherboxcontent">{{dashboardPrecipitationValues[2]}} mm</div>
+
+                    </div>
+                </ion-col>
+            </ion-row>
+            <ion-row *ngIf="isLocationEmpty()">
+                <ion-col size="10" offset="1" class="">
+                    <ion-text color="light">Bitte Standort in den Einstellungen setzen</ion-text>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-card>
+    <div class="settings-card" *ngIf="isDashboardEmpty() && connectedToController && termsAccepted">
+        <ion-grid>
+            <ion-row>
+                <ion-col size="10" offset="1" class="">
+                    <ion-text color="light">Bitte die anzuzeigenden Diagramme in den Einstellungen auswählen</ion-text>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'waterlevel'" *ngIf="checkActiveDashboardElement('waterlevel') && connectedToController" [charttitle]="'Füllstands-Historie'" #waterlevel>
+    </app-waterlevelhistory>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'overflow'" *ngIf="checkActiveDashboardElement('overflow') && connectedToController" [charttitle]="'Übergelaufene Regenmenge'" #overflow>
+    </app-waterlevelhistory>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'stored'" *ngIf="checkActiveDashboardElement('stored') && connectedToController" [charttitle]="'Gespeicherte Regenmenge'" #stored>
+    </app-waterlevelhistory>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'drained'" *ngIf="checkActiveDashboardElement('drained') && connectedToController" [charttitle]="'Genutzte Regenmenge'" #drained>
+    </app-waterlevelhistory>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'actualPPT'" *ngIf="checkActiveDashboardElement('actualPPT') && connectedToController" [charttitle]="'Gefallene Regenmenge gemessen'" #actualPPT>
+    </app-waterlevelhistory>
+
+    <app-waterlevelhistory [typeOfDiagramm]="'projectedPPT'" *ngIf="checkActiveDashboardElement('projectedPPT') && connectedToController" [charttitle]="'Gefallene Regenmenge laut Radar'" #projectedPPT>
+    </app-waterlevelhistory>
+
+<!--  <ion-card class="settings-card oowv_no_con_cont" *ngIf="!acceptedTerms">-->
+<!--    <ion-button id="open-modal" expand="block" color="light" class="settings-button-primary">Datenschutz- und Nutzungsbedinungen</ion-button>-->
+<!--    <ion-modal #modal trigger="open-modal" [canDismiss]="canDismiss" [presentingElement]="presentingElement">-->
+<!--      <ng-template>-->
+<!--        <ion-header>-->
+<!--          <ion-toolbar>-->
+<!--            <ion-title>Modal</ion-title>-->
+<!--            <ion-buttons slot="end">-->
+<!--              <ion-button (click)="modal.dismiss()">Close</ion-button>-->
+<!--            </ion-buttons>-->
+<!--          </ion-toolbar>-->
+<!--        </ion-header>-->
+<!--        <ion-content>-->
+<!--          <p class="ion-padding-horizontal">You must accept the terms and conditions to close this modal.</p>-->
+<!--          <ion-item>-->
+<!--            <ion-checkbox id="terms" (ionChange)="onTermsChanged($event)" [checked]="canDismiss">-->
+<!--              <div class="ion-text-wrap">Do you accept the terms and conditions?</div>-->
+<!--            </ion-checkbox>-->
+<!--          </ion-item>-->
+<!--        </ion-content>-->
+<!--      </ng-template>-->
+<!--    </ion-modal>-->
+<!--  </ion-card>-->
+
+  <ion-card class="settings-card oowv_no_con_cont" *ngIf="!connectedToController && termsAccepted">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" class="oowv_no_con">
+          <ion-text class="oowv_no_con_txt" color="light boldText boxheader">Keine Verbindung!</ion-text>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" class="">
+          <div class="">
+            <div class="noConTitle"><p>Es konnte keine Verbindung zum Controller hergestellt werden</p></div>
+            <div class="noConTitle">
+              <p>
+                Bitte stellen Sie sicher, dass der Controller eingeschaltet und mit dem
+                Netzwerk verbunden ist oder überprüfen Sie die IP-Adresse in den Einstellungen
+              </p>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-card>
+
+</ion-content>

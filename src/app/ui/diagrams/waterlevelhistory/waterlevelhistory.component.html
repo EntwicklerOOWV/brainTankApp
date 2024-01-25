@@ -1,0 +1,52 @@
+<div class="waterlevelhistory">
+
+    <div #testclass></div>
+    <div id="">
+        <ion-card class="waterlevel-card">
+
+
+            <ion-list class="transparentBackground">
+                <ion-item color="transparent">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-text color="light boldText boxheader">{{charttitle}}</ion-text>
+                            </ion-col>
+
+                            <ion-col size="12">
+                                <ion-select class="timeframeselect" [(ngModel)]="selectedTimeframeWaterlevel" aria-label="timeframe_waterlevel" placeholder="{{selectedTimeframeWaterlevel.value}}" (ionChange)="handleChange($event)">
+                                    <ion-select-option *ngFor="let t of timeframes" [value]="t">{{t.value}}</ion-select-option>
+                                </ion-select>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+
+                </ion-item>
+            </ion-list>
+
+            <ion-card-content>
+                <canvas #barChart></canvas>
+            </ion-card-content>
+        </ion-card>
+        <!--
+        <ion-card>
+            <ion-card-header>
+                <div class="container">
+                    <div class="title">My Title</div>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Select</mat-label>
+                        <mat-select [(value)]="selectedValue" (selectionChange)="onSelectChange($event)">
+                            <mat-option value="Option1">Option 1</mat-option>
+                            <mat-option value="Option2">Option 2</mat-option>
+                            <mat-option value="Option3">Option 3</mat-option>
+                            <mat-option value="Option4">Option 4</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </ion-card-header>
+            <ion-card-content>
+        </ion-card-content>
+        </ion-card>
+        -->
+    </div>
+</div>
