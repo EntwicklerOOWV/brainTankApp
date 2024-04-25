@@ -118,46 +118,6 @@ export class HomePage {
         console.error('Error loading dashboard config:', JSON.stringify(error));
       }
     });
-
-    // let isTestData = this.latitude == 0 && this.longitude == 0;
-    //
-    // if (isTestData) {
-    //   let url = this.getTestSwatApiUrl(this.latitude,this.longitude);
-    //   this.getJsonData(url).subscribe(
-    //     (data) => {
-    //       let json = data;
-    //       let currentTime = json["vorhersageZeit"];
-    //       let forecast = json["vorhersage"];
-    //       let fiveMinVal = json["aktuell"][currentTime];
-    //       console.log("json: "+JSON.stringify(json));
-    //       let oneHourVal = this.summarizeForecastValues(11,forecast,fiveMinVal);
-    //       let twoHourVal = this.summarizeForecastValues(23,forecast,fiveMinVal);
-    //       console.log("forecast: "+JSON.stringify(forecast));
-    //       console.log("fiveMinVal: "+fiveMinVal);
-    //       console.log("oneHourVal: "+oneHourVal);
-    //       console.log("twoHourVal: "+twoHourVal);
-    //       this.dashboardPrecipitationValues =  [fiveMinVal,oneHourVal,twoHourVal];
-    //     }
-    //   );
-    // } else {
-    //   let url = this.getSwatApiUrl(this.latitude,this.longitude);
-    //   this.getJsonData(url).subscribe(
-    //     (data) => {
-    //       let json = data;
-    //       let currentTime = json["vorhersageZeit"];
-    //       let forecast = json["vorhersage"];
-    //       let fiveMinVal = json["aktuell"][currentTime];
-    //       console.log("json: "+JSON.stringify(json));
-    //       let oneHourVal = this.summarizeForecastValues(11,forecast,fiveMinVal);
-    //       let twoHourVal = this.summarizeForecastValues(23,forecast,fiveMinVal);
-    //       console.log("forecast: "+JSON.stringify(forecast));
-    //       console.log("fiveMinVal: "+fiveMinVal);
-    //       console.log("oneHourVal: "+oneHourVal);
-    //       console.log("twoHourVal: "+twoHourVal);
-    //       this.dashboardPrecipitationValues =  [fiveMinVal,oneHourVal,twoHourVal];
-    //     }
-    //   );
-    // }
   }
   getDashboardData(){
     var context = this
