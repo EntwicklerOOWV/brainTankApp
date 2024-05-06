@@ -101,45 +101,23 @@ export class HomePage {
   getDashboardPrecipitationValues() {
     if(this.isLocationEmpty()) return;
 
-    let isTestData = this.latitude == 0 && this.longitude == 0;
+    this.apiService.getDashboardConfig().subscribe({
+      next: (data) => {
+        // Assuming `data` contains the fields directly, otherwise adjust the path accordingly
+        this.dashboardData = data; // Update dashboardData with the new data
 
-    if (isTestData) {
-      let url = this.getTestSwatApiUrl(this.latitude,this.longitude);
-      this.getJsonData(url).subscribe(
-        (data) => {
-          let json = data;
-          let currentTime = json["vorhersageZeit"];
-          let forecast = json["vorhersage"];
-          let fiveMinVal = json["aktuell"][currentTime];
-          console.log("json: "+JSON.stringify(json));
-          let oneHourVal = this.summarizeForecastValues(11,forecast,fiveMinVal);
-          let twoHourVal = this.summarizeForecastValues(23,forecast,fiveMinVal);
-          console.log("forecast: "+JSON.stringify(forecast));
-          console.log("fiveMinVal: "+fiveMinVal);
-          console.log("oneHourVal: "+oneHourVal);
-          console.log("twoHourVal: "+twoHourVal);
-          this.dashboardPrecipitationValues =  [fiveMinVal,oneHourVal,twoHourVal];
-        }
-      );
-    } else {
-      let url = this.getSwatApiUrl(this.latitude,this.longitude);
-      this.getJsonData(url).subscribe(
-        (data) => {
-          let json = data;
-          let currentTime = json["vorhersageZeit"];
-          let forecast = json["vorhersage"];
-          let fiveMinVal = json["aktuell"][currentTime];
-          console.log("json: "+JSON.stringify(json));
-          let oneHourVal = this.summarizeForecastValues(11,forecast,fiveMinVal);
-          let twoHourVal = this.summarizeForecastValues(23,forecast,fiveMinVal);
-          console.log("forecast: "+JSON.stringify(forecast));
-          console.log("fiveMinVal: "+fiveMinVal);
-          console.log("oneHourVal: "+oneHourVal);
-          console.log("twoHourVal: "+twoHourVal);
-          this.dashboardPrecipitationValues =  [fiveMinVal,oneHourVal,twoHourVal];
-        }
-      );
-    }
+        let forecast = this.dashboardData["forecast"];
+        let fiveMinVal = this.dashboardData["current"];
+        let oneHourVal = this.summarizeForecastValues(11, forecast, fiveMinVal);
+        let twoHourVal = this.summarizeForecastValues(23, forecast, fiveMinVal);
+
+        this.dashboardPrecipitationValues = [fiveMinVal, oneHourVal, twoHourVal];
+        console.log('Dashboard precipitation values:', JSON.stringify(this.dashboardPrecipitationValues));
+      },
+      error: (error) => {
+        console.error('Error loading dashboard config:', JSON.stringify(error));
+      }
+    });
   }
   getDashboardData(){
     var context = this
