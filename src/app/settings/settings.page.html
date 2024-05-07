@@ -5,7 +5,66 @@
         </div>
     </div>
     <div class="page-title">Einstellungen</div>
+
+    <ion-refresher slot="fixed" (ionRefresh)="handleSettingsRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+
+
+    <ion-card class="refresh-bar" *ngIf="settingsRefreshFinished">
+        <div class="noConTitle" *ngIf="connectedToController">
+            <p>Daten aktualisiert</p>
+        </div>
+        <div class="noConTitle" *ngIf="!connectedToController">
+            <p>Keine Verbindung zum Controller</p>
+        </div>
+    </ion-card>
+
+
     <div class="settings-box ">
+
+
+        <div class="settings-card">
+            <ion-text color="light  boxheader">Verbindungsstatus</ion-text>
+
+            <ion-card color="transparent" style="margin-bottom: 10px;">
+                <ion-card-content class="lightBox">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-status-col">
+                                <ion-text color="light">Controller</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="!connectedToController">
+                                <ion-text color="danger" style="font-weight: bold;">Nicht Aktiv</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="connectedToController">
+                                <ion-text color="success" style="font-weight: bold;">Aktiv</ion-text>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card-content>
+            </ion-card>
+
+            <ion-card color="transparent">
+                <ion-card-content class="lightBox">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="ion-status-col">
+                                <ion-text color="light">Service</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="!serviceActive">
+                                <ion-text color="danger" style="font-weight: bold;">Nicht Aktiv</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="serviceActive">
+                                <ion-text color="success" style="font-weight: bold;">Aktiv</ion-text>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-card-content>
+            </ion-card>
+        </div>
+
         <div class="settings-card">
             <ion-text color="light  boxheader">Am Speicher angeschlossene Dachflächen</ion-text>
 

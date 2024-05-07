@@ -29,11 +29,9 @@ export class HomePage {
   buttonAuto = false
   isDraining = false
   tracking_short:any;
-  tracking_long:any;
   connectedToController:boolean = false;
-
   termsAccepted:boolean;
-
+  homeRefreshFinished:boolean = false;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
@@ -55,7 +53,7 @@ export class HomePage {
   ngAfterViewInit() {
     console.log("terms accepted is"+this.termsAccepted)
     this.getDashboardPrecipitationValues();
-    this.tracking_short = interval(5000)
+    this.tracking_short = interval(10000)
       .subscribe(() => {
         this.getDashboardData();
         this.initLatLon();
@@ -64,7 +62,6 @@ export class HomePage {
   }
   ngOnDestroy() {
     this.tracking_short.unsubscribe;
-    this.tracking_long.unsubscribe;
   }
   ionViewWillEnter() {
     this.dataStorageService
@@ -228,5 +225,22 @@ export class HomePage {
         this.longitude = long
       }
     })
+  }
+
+  displayRefreshNotification(event) {
+    setTimeout(() => {
+      this.homeRefreshFinished = true;
+      setTimeout(() => {
+        this.homeRefreshFinished = false;
+      }, 5000);
+      event.target.complete();
+    }, 2000);
+  }
+  handleHomeRefresh(event) {
+    this.getDashboardData();
+    this.getDashboardPrecipitationValues();
+    console.log('dashboard data and precipitation values updated');
+
+    this.displayRefreshNotification(event);
   }
 }

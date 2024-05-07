@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Geolocation } from '@capacitor/geolocation'
 import { Capacitor } from '@capacitor/core'
+import { interval} from 'rxjs';
 import { DataStorageService } from '../services/data-storage.service'
 import { ApiService } from '../services/api.service'
 import {animate, style, transition, trigger} from "@angular/animations";
@@ -57,6 +58,11 @@ export class SettingsPage implements OnInit {
   possibleDrainAmount: any = [0,20,40,60,80]
   selectedRainTimeframe = 5
   showNewPositionInfo=false
+  settingsRefreshFinished:boolean = false;
+  tracking_short:any;
+  connectedToController:boolean = false;
+  controllerActive:boolean = false;
+  serviceActive:boolean = false;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
@@ -79,13 +85,33 @@ export class SettingsPage implements OnInit {
       })
     this.getSettingsJSON()
     this.getAutomationJSON()
-this.getSavedPosition();
+    this.getSavedPosition();
+    this.pingControllerActive();
+    this.pingServiceActive();
   }
 
   ngOnInit() {
     this.roofAreas = this.getRoofArea()
     this.roofAreaCombined = this.getCombinedRoofArea()
     this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
+    this.pingControllerActive();
+    this.pingServiceActive();
+  }
+
+  ngAfterViewInit() {
+      this.tracking_short = interval(5000)
+      .subscribe(() => {
+        console.log("settings updated from tracking_short")
+        this.getSettingsJSON();
+        this.getAutomationJSON();
+        this.getSavedPosition();
+        this.pingControllerActive();
+        this.pingServiceActive();
+      });
+  }
+
+  ngOnDestroy() {
+    this.tracking_short.unsubscribe;
   }
 
   getSettingsJSON() {
@@ -121,9 +147,11 @@ this.getSavedPosition();
           this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
 
           this.unpackSettingsJSON()
+          this.connectedToController = true;
         },
         error: (error) => {
           console.log('Error HTTPResponse' + JSON.stringify(error))
+          this.connectedToController = false;
         },
       })
     }
@@ -138,7 +166,7 @@ this.getSavedPosition();
   toggleContent() {
     this.newRooftopIsCollapsed = !this.newRooftopIsCollapsed
   }
-getSavedPosition(){
+  getSavedPosition(){
   this.dataStorageService
   .getStoredData('lat')
   .then((lat) => {
@@ -434,5 +462,57 @@ getSavedPosition(){
   }
   compareWith(o1, o2) {
     return o1 && o2 ? o1.id === o2.id : o1 === o2;
+  }
+
+  displayRefreshNotification(event) {
+    setTimeout(() => {
+      this.settingsRefreshFinished = true;
+      // You can optionally reset refreshFinished after a certain period of time
+      setTimeout(() => {
+        this.settingsRefreshFinished = false;
+      }, 5000); // Reset after 5 seconds
+      event.target.complete(); // Call complete() to indicate that the refresh has completed
+    }, 2000);
+  }
+
+  handleSettingsRefresh(event) {
+    this.getSettingsJSON();
+    this.getAutomationJSON()
+    this.pingControllerActive();
+    this.pingServiceActive();
+    this.displayRefreshNotification(event);
+  }
+
+  pingControllerActive() {
+    // This function uses HTTP request to check if the server is reachable
+    // console.log("pingCOntrollerActive with http://" + this.ipAdress);
+    // fetch('http://' + this.ipAdress, { method: 'HEAD' })
+    //   .then(response => {
+    //     if (response.ok) {
+    //       console.log('Raspberry Pi is reachable under ipAdress: ' + this.ipAdress);
+    //       this.controllerActive = true; // Set controllerActive to true if reachable
+    //     } else {
+    //       console.log('Raspberry Pi is not reachable under ipAdress: ' + this.ipAdress);
+    //       this.controllerActive = false; // Set controllerActive to false if not reachable
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log('Raspberry Pi is not reachable under ipAdress: ' + this.ipAdress);
+    //     this.controllerActive = false; // Set controllerActive to false if not reachable
+    //   });
+  }
+
+  pingServiceActive(){
+    //set the serviceActive boolean to true of the this.checkServiceStatus returns a 200 status code
+    this.apiService.checkServiceStatus().subscribe({
+      next: (data) => {
+        console.log('Service Status response data: ' + JSON.stringify(data))
+        this.serviceActive = true;
+      },
+      error: (error) => {
+        console.log('Service Status Error HTTPResponse' + JSON.stringify(error))
+        this.serviceActive = false;
+      },
+    })
   }
 }

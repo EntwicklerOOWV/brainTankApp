@@ -6,46 +6,59 @@
     </div>
     <div class="page-title">Mein Dashboard</div>
 
-    <div class="terms-settings-card" *ngIf="!termsAccepted">
-    <p class="terms-description">
-      <ion-text color="light">Datenschutz- und Nutzungsbedingungen</ion-text>
-    </p>
-    <!--      <ion-button color="light" class="settings-button-primary" (click)="toggleTerms()">Datenschutz- und Nutzungsbedingungen</ion-button>-->
-    <div class="content" *ngIf="!termsAccepted">
-      <div class="terms-text-wrap">
-        <p>
-          Willkommen beim SmartWaterTank!
-        </p>
+    <ion-refresher slot="fixed" (ionRefresh)="handleHomeRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-        <p>
-          Bevor du fortfährst, möchten wir sicherstellen, dass du mit unseren Datenschutz- und Nutzungsbedingungen vertraut bist.
-          Diese legen fest, wie deine Daten gesammelt, verwendet und geschützt werden.
-          Bitte nimm dir einen Moment Zeit, um die folgenden Informationen zu überprüfen:
-        </p>
-
-        <p>
-          Datenschutzbedingungen:<br>
-          <a href="https://www.oowv.de/datenschutz">[Hier klicken, um die Datenschutzbedingungen zu lesen]</a>
-        </p>
-
-        <p>
-          Nutzungsbedingungen:<br>
-          <a href="https://www.oowv.de/nutzungsbedingungen">[Hier klicken, um die Nutzungsbedingungen zu lesen]</a>
-        </p>
-
-        <p>
-
-        </p>
-        Um fortzufahren, klicke bitte auf "Ich stimme zu", nachdem du die Datenschutz- und Nutzungsbedingungen gelesen und akzeptiert hast.
+    <ion-card class="refresh-bar" *ngIf="homeRefreshFinished">
+      <div class="noConTitle" *ngIf="connectedToController">
+        <p>Daten aktualisiert</p>
       </div>
-      <ion-checkbox class="terms-checkbox" id="terms" (ionChange)="onTermsChanged($event)" [checked]="termsAccepted">
-        <div class="terms-text-wrap">
-          Ich stimme zu
-        </div>
-      </ion-checkbox>
+      <div class="noConTitle" *ngIf="!connectedToController">
+        <p>Keine Verbindung zum Controller</p>
+      </div>
+    </ion-card>
 
+    <div class="terms-settings-card" *ngIf="!termsAccepted">
+      <p class="terms-description">
+        <ion-text color="light">Datenschutz- und Nutzungsbedingungen</ion-text>
+      </p>
+      <!--      <ion-button color="light" class="settings-button-primary" (click)="toggleTerms()">Datenschutz- und Nutzungsbedingungen</ion-button>-->
+      <div class="content" *ngIf="!termsAccepted">
+        <div class="terms-text-wrap">
+          <p>
+            Willkommen beim SmartWaterTank!
+          </p>
+
+          <p>
+            Bevor du fortfährst, möchten wir sicherstellen, dass du mit unseren Datenschutz- und Nutzungsbedingungen vertraut bist.
+            Diese legen fest, wie deine Daten gesammelt, verwendet und geschützt werden.
+            Bitte nimm dir einen Moment Zeit, um die folgenden Informationen zu überprüfen:
+          </p>
+
+          <p>
+            Datenschutzbedingungen:<br>
+            <a href="https://www.oowv.de/datenschutz">[Hier klicken, um die Datenschutzbedingungen zu lesen]</a>
+          </p>
+
+          <p>
+            Nutzungsbedingungen:<br>
+            <a href="https://www.oowv.de/nutzungsbedingungen">[Hier klicken, um die Nutzungsbedingungen zu lesen]</a>
+          </p>
+
+          <p>
+
+          </p>
+          Um fortzufahren, klicke bitte auf "Ich stimme zu", nachdem du die Datenschutz- und Nutzungsbedingungen gelesen und akzeptiert hast.
+        </div>
+        <ion-checkbox class="terms-checkbox" id="terms" (ionChange)="onTermsChanged($event)" [checked]="termsAccepted">
+          <div class="terms-text-wrap">
+            Ich stimme zu
+          </div>
+        </ion-checkbox>
+
+      </div>
     </div>
-  </div>
 
     <ion-grid class="controlSettings" *ngIf="connectedToController && termsAccepted">
         <ion-row>

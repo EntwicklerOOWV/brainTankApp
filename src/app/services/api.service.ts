@@ -21,6 +21,7 @@ export class ApiService {
   stopDrainUrl:any = "stop_drain"
   drainCompleteUrl:any = "threshold_drain/1"
   playerIDUrl:any ="update_player_ids"
+  getServiceStatusUrl:any = "get_service_status"
 
 //basicUrl:any = "http://192.168.20.158/getconfig"
 
@@ -158,5 +159,13 @@ customPostRequest(url,payload){
     data => console.log("Got data", data),
     error => console.error("Got error", error)
   );
+}
+
+checkServiceStatus(){
+  return this.http.get(this.basicUrl+this.getServiceStatusUrl)
+}
+
+checkControllerStatus(){
+  return this.http.get(this.basicUrl)
 }
 }
