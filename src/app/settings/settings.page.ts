@@ -60,13 +60,13 @@ export class SettingsPage implements OnInit {
   showNewPositionInfo=false
   settingsRefreshFinished:boolean = false;
   tracking_short:any;
-  connectedToController:boolean = false;
   controllerActive:boolean = false;
   serviceActive:boolean = false;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
   ) {
+    this.pingServiceActive();
     this.dataStorageService
       .getStoredData('activeDashboardElements')
       .then((activeDashboardElements) => {
@@ -87,7 +87,6 @@ export class SettingsPage implements OnInit {
     this.getAutomationJSON()
     this.getSavedPosition();
     this.pingControllerActive();
-    this.pingServiceActive();
   }
 
   ngOnInit() {
@@ -99,19 +98,24 @@ export class SettingsPage implements OnInit {
   }
 
   ngAfterViewInit() {
+    if(this.tracking_short == null){
       this.tracking_short = interval(5000)
       .subscribe(() => {
+        this.pingServiceActive();
         console.log("settings updated from tracking_short")
+        this.roofAreas = this.getRoofArea()
+        this.roofAreaCombined = this.getCombinedRoofArea()
+        this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
         this.getSettingsJSON();
         this.getAutomationJSON();
         this.getSavedPosition();
         this.pingControllerActive();
-        this.pingServiceActive();
       });
+    }
   }
 
   ngOnDestroy() {
-    this.tracking_short.unsubscribe;
+    this.tracking_short.unsubscribe();
   }
 
   getSettingsJSON() {
@@ -147,11 +151,9 @@ export class SettingsPage implements OnInit {
           this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
 
           this.unpackSettingsJSON()
-          this.connectedToController = true;
         },
         error: (error) => {
           console.log('Error HTTPResponse' + JSON.stringify(error))
-          this.connectedToController = false;
         },
       })
     }
@@ -184,18 +186,22 @@ export class SettingsPage implements OnInit {
   })
 }
   getRoofArea() {
-    //console.log('settingsjson_' + JSON.stringify(this.settingsJSON))
-    return this.settingsJSON['surfaces']
-      ? this.settingsJSON['surfaces']
-      : [{ empty: 0 }]
+    if(this.serviceActive){
+      //console.log('settingsjson_' + JSON.stringify(this.settingsJSON))
+      return this.settingsJSON['surfaces']
+        ? this.settingsJSON['surfaces']
+        : [{ empty: 0 }]
+    } else return [{ empty: 0 }]
   }
   getCombinedRoofArea() {
     let totalSize = 0
-    if(this.settingsJSON['surfaces']!=null){
-    for (let i = 0; i < this.settingsJSON['surfaces'].length; i++) {
-      totalSize += parseInt(this.settingsJSON['surfaces'][i].size)
+    if(this.serviceActive){
+      if(this.settingsJSON['surfaces']!=null){
+        for (let i = 0; i < this.settingsJSON['surfaces'].length; i++) {
+          totalSize += parseInt(this.settingsJSON['surfaces'][i].size)
+        }
+      }
     }
-  }
     this.combinedRooftopVolume = totalSize
     //console.log(totalSize)
     return totalSize

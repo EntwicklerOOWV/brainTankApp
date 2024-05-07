@@ -13,10 +13,10 @@
 
 
     <ion-card class="refresh-bar" *ngIf="settingsRefreshFinished">
-        <div class="noConTitle" *ngIf="connectedToController">
+        <div class="noConTitle" *ngIf="serviceActive">
             <p>Daten aktualisiert</p>
         </div>
-        <div class="noConTitle" *ngIf="!connectedToController">
+        <div class="noConTitle" *ngIf="!serviceActive">
             <p>Keine Verbindung zum Controller</p>
         </div>
     </ion-card>
@@ -28,23 +28,23 @@
         <div class="settings-card">
             <ion-text color="light  boxheader">Verbindungsstatus</ion-text>
 
-            <ion-card color="transparent" style="margin-bottom: 10px;">
+            <!-- <ion-card color="transparent" style="margin-bottom: 10px;">
                 <ion-card-content class="lightBox">
                     <ion-grid>
                         <ion-row>
                             <ion-col class="ion-status-col">
                                 <ion-text color="light">Controller</ion-text>
                             </ion-col>
-                            <ion-col class="ion-status-col" *ngIf="!connectedToController">
+                            <ion-col class="ion-status-col" *ngIf="!controllerActive">
                                 <ion-text color="danger" style="font-weight: bold;">Nicht Aktiv</ion-text>
                             </ion-col>
-                            <ion-col class="ion-status-col" *ngIf="connectedToController">
+                            <ion-col class="ion-status-col" *ngIf="controllerActive">
                                 <ion-text color="success" style="font-weight: bold;">Aktiv</ion-text>
                             </ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-card-content>
-            </ion-card>
+            </ion-card> -->
 
             <ion-card color="transparent">
                 <ion-card-content class="lightBox">
@@ -105,7 +105,7 @@
 
             <!--div class="settings-button" (click)="toggleContent()">Dachfläche hinzufügen</div-->
 
-            <ion-button color="light" class="settings-button-primary" (click)="toggleContent()">Dachfläche hinzufügen</ion-button>
+            <ion-button *ngIf="serviceActive" color="light" class="settings-button-primary" (click)="toggleContent()">Dachfläche hinzufügen</ion-button>
 
 
             <div class="content" *ngIf="!newRooftopIsCollapsed">

@@ -29,7 +29,7 @@ export class HomePage {
   buttonAuto = false
   isDraining = false
   tracking_short:any;
-  connectedToController:boolean = false;
+  serviceActive:boolean = false;
   termsAccepted:boolean;
   homeRefreshFinished:boolean = false;
   constructor(
@@ -38,6 +38,7 @@ export class HomePage {
     private http: HttpClient,
     private storage: Storage
   ){
+    this.pingServiceActive();
     this.dataStorageService
     .getStoredData('activeDashboardElements')
     .then((activeDashboardElements) => {
@@ -47,30 +48,30 @@ export class HomePage {
     })
     this.loadTermsAccepted();
     this.getDashboardData();
-    this.initLatLon();
     this.getDashboardPrecipitationValues();
   }
   ngAfterViewInit() {
-    console.log("terms accepted is"+this.termsAccepted)
+    this.initLatLon();
     this.getDashboardPrecipitationValues();
-    this.tracking_short = interval(10000)
-      .subscribe(() => {
-        this.getDashboardData();
-        this.initLatLon();
-        this.getDashboardPrecipitationValues();
-      });
-  }
-  ngOnDestroy() {
-    this.tracking_short.unsubscribe;
-  }
-  ionViewWillEnter() {
     this.dataStorageService
       .getStoredData('activeDashboardElements')
       .then((activeDashboardElements) => {
         if(activeDashboardElements!=null){
           this.activeDashboardElements = activeDashboardElements
         }
-      })
+    })
+    if(this.tracking_short == null){
+    this.tracking_short = interval(5000)
+      .subscribe(() => {
+        this.pingServiceActive();
+        this.getDashboardData();
+        this.initLatLon();
+        this.getDashboardPrecipitationValues();
+      });
+    }
+  }
+  ngOnDestroy() {
+    this.tracking_short.unsubscribe();
   }
   getJsonData(url: string): Observable<any> {
     return this.http.get(url);
@@ -127,11 +128,9 @@ export class HomePage {
           context.isDraining = data["is_draining"];
           context.drainThreshold = parseInt(data["drain_threshold"]*100+"");
           //console.log('response data: ' + JSON.stringify(context.dashboardData))
-          context.connectedToController = true;
         },
         error: (error) => {
           console.log('Error HTTPResponse' + JSON.stringify(error));
-          context.connectedToController = false;
         },
       })
     }.bind(context), 1000);
@@ -220,5 +219,19 @@ export class HomePage {
     console.log('dashboard data and precipitation values updated');
 
     this.displayRefreshNotification(event);
+  }
+
+  pingServiceActive(){
+    //set the serviceActive boolean to true of the this.checkServiceStatus returns a 200 status code
+    this.apiService.checkServiceStatus().subscribe({
+      next: (data) => {
+        console.log('Service Status response data: ' + JSON.stringify(data))
+        this.serviceActive = true;
+      },
+      error: (error) => {
+        console.log('Service Status Error HTTPResponse' + JSON.stringify(error))
+        this.serviceActive = false;
+      },
+    })
   }
 }

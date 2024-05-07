@@ -11,10 +11,10 @@
     </ion-refresher>
 
     <ion-card class="refresh-bar" *ngIf="homeRefreshFinished">
-      <div class="noConTitle" *ngIf="connectedToController">
+      <div class="noConTitle" *ngIf="serviceActive">
         <p>Daten aktualisiert</p>
       </div>
-      <div class="noConTitle" *ngIf="!connectedToController">
+      <div class="noConTitle" *ngIf="!serviceActive">
         <p>Keine Verbindung zum Controller</p>
       </div>
     </ion-card>
@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <ion-grid class="controlSettings" *ngIf="connectedToController && termsAccepted">
+    <ion-grid class="controlSettings" *ngIf="serviceActive && termsAccepted">
         <ion-row>
             <ion-col size="2" class="cardContent">
                 <div class="waterlevelcontainer">
@@ -103,7 +103,7 @@
 
         </ion-row>
     </ion-grid>
-    <ion-card class="settings-card" *ngIf="connectedToController && termsAccepted">
+    <ion-card class="settings-card" *ngIf="serviceActive && termsAccepted">
         <ion-grid>
             <ion-row>
                 <ion-col size="12" class="">
@@ -142,7 +142,7 @@
             </ion-row>
         </ion-grid>
     </ion-card>
-    <div class="settings-card" *ngIf="isDashboardEmpty() && connectedToController && termsAccepted">
+    <div class="settings-card" *ngIf="isDashboardEmpty() && serviceActive && termsAccepted">
         <ion-grid>
             <ion-row>
                 <ion-col size="10" offset="1" class="">
@@ -152,22 +152,22 @@
         </ion-grid>
     </div>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'waterlevel'" *ngIf="checkActiveDashboardElement('waterlevel') && connectedToController" [charttitle]="'Füllstands-Historie'" #waterlevel>
+    <app-waterlevelhistory [typeOfDiagramm]="'waterlevel'" *ngIf="checkActiveDashboardElement('waterlevel') && serviceActive" [charttitle]="'Füllstands-Historie'" #waterlevel>
     </app-waterlevelhistory>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'overflow'" *ngIf="checkActiveDashboardElement('overflow') && connectedToController" [charttitle]="'Übergelaufene Regenmenge'" #overflow>
+    <app-waterlevelhistory [typeOfDiagramm]="'overflow'" *ngIf="checkActiveDashboardElement('overflow') && serviceActive" [charttitle]="'Übergelaufene Regenmenge'" #overflow>
     </app-waterlevelhistory>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'stored'" *ngIf="checkActiveDashboardElement('stored') && connectedToController" [charttitle]="'Gespeicherte Regenmenge'" #stored>
+    <app-waterlevelhistory [typeOfDiagramm]="'stored'" *ngIf="checkActiveDashboardElement('stored') && serviceActive" [charttitle]="'Gespeicherte Regenmenge'" #stored>
     </app-waterlevelhistory>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'drained'" *ngIf="checkActiveDashboardElement('drained') && connectedToController" [charttitle]="'Genutzte Regenmenge'" #drained>
+    <app-waterlevelhistory [typeOfDiagramm]="'drained'" *ngIf="checkActiveDashboardElement('drained') && serviceActive" [charttitle]="'Genutzte Regenmenge'" #drained>
     </app-waterlevelhistory>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'actualPPT'" *ngIf="checkActiveDashboardElement('actualPPT') && connectedToController" [charttitle]="'Gefallene Regenmenge gemessen'" #actualPPT>
+    <app-waterlevelhistory [typeOfDiagramm]="'actualPPT'" *ngIf="checkActiveDashboardElement('actualPPT') && serviceActive" [charttitle]="'Gefallene Regenmenge gemessen'" #actualPPT>
     </app-waterlevelhistory>
 
-    <app-waterlevelhistory [typeOfDiagramm]="'projectedPPT'" *ngIf="checkActiveDashboardElement('projectedPPT') && connectedToController" [charttitle]="'Gefallene Regenmenge laut Radar'" #projectedPPT>
+    <app-waterlevelhistory [typeOfDiagramm]="'projectedPPT'" *ngIf="checkActiveDashboardElement('projectedPPT') && serviceActive" [charttitle]="'Gefallene Regenmenge laut Radar'" #projectedPPT>
     </app-waterlevelhistory>
 
 <!--  <ion-card class="settings-card oowv_no_con_cont" *ngIf="!acceptedTerms">-->
@@ -194,7 +194,7 @@
 <!--    </ion-modal>-->
 <!--  </ion-card>-->
 
-  <ion-card class="settings-card oowv_no_con_cont" *ngIf="!connectedToController && termsAccepted">
+  <ion-card class="settings-card oowv_no_con_cont" *ngIf="!serviceActive && termsAccepted">
     <ion-grid>
       <ion-row>
         <ion-col size="12" class="oowv_no_con">
