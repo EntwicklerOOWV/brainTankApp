@@ -214,10 +214,14 @@
         <ion-col size="12" class="">
           <div class="">
             <div class="noConTitle"><p>Es konnte keine Verbindung zum Controller hergestellt werden</p></div>
-            <div class="noConTitle">
+            <div class="noConTitle" *ngIf="ipAddress != null">
               <p>
-                Bitte stellen Sie sicher, dass der Controller eingeschaltet und mit dem
-                Netzwerk verbunden ist oder überprüfen Sie die IP-Adresse in den Einstellungen
+                IP Adresse: <strong style="font-weight: bold;">{{ ipAddress }}</strong>
+              </p>
+            </div>
+            <div class="noConTitle" *ngIf="ipAddress == null">
+              <p>
+                Bitte trage die IP Adresse in den Einstellungen ein.
               </p>
             </div>
           </div>
