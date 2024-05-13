@@ -32,6 +32,7 @@ export class HomePage {
   tracking_short:Subscription;
   serviceActive:boolean = false;
   termsAccepted:boolean;
+  ipAddress:any;
   homeRefreshFinished:boolean = false;
   private precipitationSubscription: Subscription;
   constructor(
@@ -56,10 +57,11 @@ export class HomePage {
     });
 
     if(this.tracking_short == null){
-    this.tracking_short = interval(10000)
+    this.tracking_short = interval(5000)
       .subscribe(() => {
         this.pingServiceActive();
         this.getDashboardData();
+        this.updateIpAddress();
       });
     }
 
@@ -77,7 +79,16 @@ export class HomePage {
     })
   }
 
+  updateIpAddress(){
+    this.dataStorageService
+    .getStoredData('ipadress')
+    .then((ipadress) => {
+      this.ipAddress = ipadress;
+    })
+  }
+
   ionViewWillEnter(){
+    this.updateIpAddress();
     this.stateService.getLocation().subscribe({
       next: (location) => {
         this.latitude = location?.latitude;
