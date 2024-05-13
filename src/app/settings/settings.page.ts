@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { Geolocation } from '@capacitor/geolocation'
 import { Capacitor } from '@capacitor/core'
-import { Subscription, interval} from 'rxjs';
+import { Subscription, interval, Observable, throwError, timer} from 'rxjs';
+import { delay, catchError, take } from 'rxjs/operators';
 import { DataStorageService } from '../services/data-storage.service'
 import { ApiService } from '../services/api.service'
 import {animate, style, transition, trigger} from "@angular/animations";
@@ -541,7 +542,12 @@ export class SettingsPage implements OnInit {
   }
 
   pingServiceActive() {
-    this.apiService.checkServiceStatus().subscribe({
+    this.apiService.checkServiceStatus().pipe(
+      catchError(error => {
+        console.error('Error occurred:', error);
+        return timer(5000).pipe(take(3)); // Retry after 5 seconds, up to 3 times
+      })
+    ).subscribe({
       next: (data) => {
         this.stateService.updateServiceActive(true);
       },

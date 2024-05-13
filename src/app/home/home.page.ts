@@ -1,8 +1,8 @@
 import { Component,ViewChild  } from '@angular/core';
 import { DataStorageService } from '../services/data-storage.service';
 import { ApiService } from '../services/api.service'
-import { Subscription, interval} from 'rxjs';
-import { Observable } from 'rxjs';
+import { Subscription, interval, Observable, throwError, timer} from 'rxjs';
+import { delay, catchError, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
@@ -65,7 +65,6 @@ export class HomePage {
       });
     }
 
-    // Schedule subsequent calls at regular intervals (e.g., every 5 minutes)
     this.precipitationSubscription = interval(5000).subscribe(() => {
       this.getDashboardPrecipitationValues();
     });
@@ -233,7 +232,12 @@ export class HomePage {
   }
 
   pingServiceActive() {
-    this.apiService.checkServiceStatus().subscribe({
+    this.apiService.checkServiceStatus().pipe(
+      catchError(error => {
+        console.error('Error occurred:', error);
+        return timer(5000).pipe(take(3)); // Retry after 5 seconds, up to 3 times
+      })
+    ).subscribe({
       next: (data) => {
         this.stateService.updateServiceActive(true);
       },
