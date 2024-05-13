@@ -1,11 +1,12 @@
 import { Component,ViewChild  } from '@angular/core';
 import { DataStorageService } from '../services/data-storage.service';
 import { ApiService } from '../services/api.service'
-import { interval} from 'rxjs';
-import { Observable } from 'rxjs';
+import { Subscription, interval, Observable, throwError, timer} from 'rxjs';
+import { delay, catchError, take } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
+import { StateService } from '../services/state.service';
 
 @Component({
   selector: 'app-home',
@@ -22,58 +23,97 @@ export class HomePage {
   @ViewChild('drained') drained;
   dashboardData:any={"waterlevel":0};
   drainThreshold=20;
-  latitude:any;
-  longitude:any;
+  latitude:any = null;
+  longitude:any = null;
   dashboardPrecipitationValues:any=[];
   activeDashboardElements:any=[];
   buttonAuto = false
   isDraining = false
-  tracking_short:any;
-  tracking_long:any;
-  connectedToController:boolean = false;
-
+  tracking_short:Subscription;
+  serviceActive:boolean = false;
   termsAccepted:boolean;
-
+  ipAddress:any;
+  homeRefreshFinished:boolean = false;
+  private precipitationSubscription: Subscription;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
     private http: HttpClient,
-    private storage: Storage
-  ){
-    this.dataStorageService
-    .getStoredData('activeDashboardElements')
-    .then((activeDashboardElements) => {
-      if(activeDashboardElements!=null){
-      this.activeDashboardElements = activeDashboardElements
-      }
-    })
+    private storage: Storage,
+    private stateService: StateService
+  ){  
+    this.pingServiceActive();
     this.loadTermsAccepted();
     this.getDashboardData();
-    this.initLatLon();
     this.getDashboardPrecipitationValues();
   }
-  ngAfterViewInit() {
-    console.log("terms accepted is"+this.termsAccepted)
-    this.getDashboardPrecipitationValues();
+
+  ngOnInit() {
+
+    this.loadTermsAccepted();
+
+    this.stateService.getServiceActive().subscribe(active => {
+      this.serviceActive = active;
+    });
+
+    if(this.tracking_short == null){
     this.tracking_short = interval(5000)
       .subscribe(() => {
+        this.pingServiceActive();
         this.getDashboardData();
-        this.initLatLon();
-        this.getDashboardPrecipitationValues();
+        this.updateIpAddress();
       });
-  }
-  ngOnDestroy() {
-    this.tracking_short.unsubscribe;
-    this.tracking_long.unsubscribe;
-  }
-  ionViewWillEnter() {
-    this.dataStorageService
-      .getStoredData('activeDashboardElements')
+    }
+
+    this.precipitationSubscription = interval(5000).subscribe(() => {
+      this.getDashboardPrecipitationValues();
+    });
+
+  this.dataStorageService
+    .getStoredData('activeDashboardElements')
       .then((activeDashboardElements) => {
         if(activeDashboardElements!=null){
           this.activeDashboardElements = activeDashboardElements
         }
-      })
+    })
+  }
+
+  updateIpAddress(){
+    this.dataStorageService
+    .getStoredData('ipadress')
+    .then((ipadress) => {
+      this.ipAddress = ipadress;
+    })
+  }
+
+  ionViewWillEnter(){
+    this.updateIpAddress();
+    this.stateService.getLocation().subscribe({
+      next: (location) => {
+        this.latitude = location?.latitude;
+        this.longitude = location?.longitude;
+      },
+      error: (error) => {
+        console.log("error updating location values in home screen");
+      }
+    });
+
+    this.dataStorageService
+    .getStoredData('activeDashboardElements')
+      .then((activeDashboardElements) => {
+        if(activeDashboardElements!=null){
+          this.activeDashboardElements = activeDashboardElements
+        }
+    })
+  }
+
+  ngOnDestroy() {
+    if(this.tracking_short){
+      this.tracking_short.unsubscribe();
+    }
+    if (this.precipitationSubscription) {
+      this.precipitationSubscription.unsubscribe();
+    }
   }
   getJsonData(url: string): Observable<any> {
     return this.http.get(url);
@@ -98,27 +138,20 @@ export class HomePage {
     const sum = values.reduce((accumulator:number, currentValue) => accumulator + (currentValue as number), 0);
     return sum+fiveMinVal;
   }
+
   getDashboardPrecipitationValues() {
-    if(this.isLocationEmpty()) return;
-
-    this.apiService.getDashboardConfig().subscribe({
-      next: (data) => {
-        // Assuming `data` contains the fields directly, otherwise adjust the path accordingly
-        this.dashboardData = data; // Update dashboardData with the new data
-
-        let forecast = this.dashboardData["forecast"];
-        let fiveMinVal = this.dashboardData["current"];
-        let oneHourVal = this.summarizeForecastValues(11, forecast, fiveMinVal);
-        let twoHourVal = this.summarizeForecastValues(23, forecast, fiveMinVal);
-
-        this.dashboardPrecipitationValues = [fiveMinVal, oneHourVal, twoHourVal];
-        console.log('Dashboard precipitation values:', JSON.stringify(this.dashboardPrecipitationValues));
+    this.apiService.getDashboardPrecipitationValues().subscribe({
+      next: (precipitationValues) => {
+        this.dashboardPrecipitationValues = precipitationValues.map(value => value.toFixed(0));;
+        // Handle the data as needed in the component
       },
       error: (error) => {
-        console.error('Error loading dashboard config:', JSON.stringify(error));
+        console.error('Failed to load precipitation values:', error);
+        // Handle the error appropriately in the component
       }
     });
   }
+
   getDashboardData(){
     var context = this
     setTimeout(function(){
@@ -129,12 +162,9 @@ export class HomePage {
           context.dashboardData = data;
           context.isDraining = data["is_draining"];
           context.drainThreshold = parseInt(data["drain_threshold"]*100+"");
-          //console.log('response data: ' + JSON.stringify(context.dashboardData))
-          context.connectedToController = true;
         },
         error: (error) => {
           console.log('Error HTTPResponse' + JSON.stringify(error));
-          context.connectedToController = false;
         },
       })
     }.bind(context), 1000);
@@ -156,7 +186,6 @@ export class HomePage {
     this.buttonAuto = this.dashboardData.control_mode*/
     payload["control_mode"]=mode
     this.buttonAuto = mode
-    console.log(JSON.stringify(payload))
     this.apiService
     .setDashbardConfig(payload)
     if(this.isDraining)this.apiService.stopDrain();
@@ -170,7 +199,6 @@ export class HomePage {
     .drainComplete("")
   }
   stopDrain(){
-    console.log("stopping drain");
     this.apiService.stopDrain()
   }
   async onTermsChanged(event: Event) {
@@ -182,29 +210,40 @@ export class HomePage {
   async loadTermsAccepted() {
     // Load the value from storage. If it doesn't exist, default to false.
     this.termsAccepted = (await this.storage.get('termsAccepted')) || false;
-    console.log("loadtermsaccepted: "+this.termsAccepted);
   }
   async acceptTerms() {
     // Set the variable to true and save it to storage.
     await this.storage.set('termsAccepted', true);
     await this.loadTermsAccepted();
-    console.log("acceptterms: "+this.termsAccepted);
   }
-  initLatLon(){
-    this.dataStorageService
-    .getStoredData('lat')
-    .then((lat) => {
-      if (lat != null) {
-        this.latitude = lat
-      }
-    })
 
-    this.dataStorageService
-    .getStoredData('long')
-    .then((long) => {
-      if (long != null) {
-        this.longitude = long
-      }
-    })
+  displayRefreshNotification(event) {
+    setTimeout(() => {
+      this.homeRefreshFinished = true;
+      setTimeout(() => {
+        this.homeRefreshFinished = false;
+      }, 5000);
+      event.target.complete();
+    }, 2000);
+  }
+  handleHomeRefresh(event) {
+    this.getDashboardData();
+    this.displayRefreshNotification(event);
+  }
+
+  pingServiceActive() {
+    this.apiService.checkServiceStatus().pipe(
+      catchError(error => {
+        console.error('Error occurred:', error);
+        return timer(5000).pipe(take(3)); // Retry after 5 seconds, up to 3 times
+      })
+    ).subscribe({
+      next: (data) => {
+        this.stateService.updateServiceActive(true);
+      },
+      error: (error) => {
+        this.stateService.updateServiceActive(false);
+      },
+    });
   }
 }

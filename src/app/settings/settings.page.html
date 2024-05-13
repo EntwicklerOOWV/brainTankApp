@@ -5,130 +5,67 @@
         </div>
     </div>
     <div class="page-title">Einstellungen</div>
-    <div class="settings-box ">
-        <div class="settings-card">
-            <ion-text color="light  boxheader">Am Speicher angeschlossene Dachflächen</ion-text>
 
-            <ion-card color="transparent" *ngFor="let roofArea of roofAreas; let i = index">
+    <ion-refresher slot="fixed" (ionRefresh)="handleSettingsRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- Pull-Down-To-Refresh Notification Bar -->
+    <ion-card class="refresh-bar" *ngIf="settingsRefreshFinished">
+        <div class="noConTitle" *ngIf="serviceActive">
+            <p>Daten aktualisiert</p>
+        </div>
+        <div class="noConTitle" *ngIf="!serviceActive">
+            <p>Keine Verbindung zum Controller</p>
+        </div>
+    </ion-card>
+
+    <div class="settings-box ">
+        <!-- Status -->
+        <div class="settings-card">
+            <ion-text color="light  boxheader">Verbindungsstatus</ion-text>
+
+            <!-- <ion-card color="transparent" style="margin-bottom: 10px;">
                 <ion-card-content class="lightBox">
                     <ion-grid>
                         <ion-row>
-                            <ion-col size="5" class="cardContent cardContentLine  "> {{roofArea.name}}</ion-col>
-                            <ion-col size="3" class="cardContent cardContentLine paddingleft">Größe:</ion-col>
-                            <ion-col size="3" class="cardContent cardContentLine">{{roofArea.size}}m²</ion-col>
-                            <ion-col size="1" class="cardContent cardContentLine">
-                                <ion-icon (click)="deleteRoof(i)" name="trash-outline"></ion-icon>
+                            <ion-col class="ion-status-col">
+                                <ion-text color="light">Controller</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="!controllerActive">
+                                <ion-text color="danger" style="font-weight: bold;">Nicht Aktiv</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="controllerActive">
+                                <ion-text color="success" style="font-weight: bold;">Aktiv</ion-text>
                             </ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-card-content>
-            </ion-card>
-
-            <ion-grid>
-                <ion-row class="borderBottom">
-                    <ion-col size="9" offset="1" class="cardContent ">
-                        <ion-text color="light boldText">Dachflächen insgesamt:</ion-text>
-                    </ion-col>
-                    <ion-col size="2" class="cardContent">{{combinedRooftopVolume}}m²</ion-col>
-                </ion-row>
-            </ion-grid>
-            <ion-text color="light boldText">Benötigte IBC-Container</ion-text>
-
-            <ion-card color="transparent">
-                <ion-card-content class="ion-text-center lightBox">
-                    <ion-text color="light boldText"> {{recommendedCOntainerAmount}}</ion-text>
-                </ion-card-content>
-            </ion-card>
-
-            <p class="recommendText borderBottom">
-                <ion-text color="light">Wir empfehlen einen IBC-Container pro 100m² Dachfläche.</ion-text>
-            </p>
-
-            <!--div class="settings-button" (click)="toggleContent()">Dachfläche hinzufügen</div-->
-
-            <ion-button color="light" class="settings-button-primary" (click)="toggleContent()">Dachfläche hinzufügen</ion-button>
-
-
-            <div class="content" *ngIf="!newRooftopIsCollapsed">
-
-                <ion-text color="light boldText">Neue Dachfläche erstellen</ion-text>
-
-                <ion-grid>
-
-                    <ion-card color="transparent">
-                        <ion-card-content>
-                            <ion-row class=" borderBottom">
-
-                                <ion-col size="6" class="cardContent ">Dachfläche</ion-col>
-                                <ion-col size="4" class="cardContent">
-                                    <input type="number" [(ngModel)]="newRoofSize" class="settingsInputText" id="fname" name="fname">
-                                </ion-col>
-                                <ion-col size="2" class="cardContent">m²</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size="10" offset="1">
-                                    <ion-text color="light">Diese bezieht sich auf die von oben betrachtete Dachfläche</ion-text>
-                                </ion-col>
-                            </ion-row>
-                        </ion-card-content>
-                    </ion-card>
-                    <ion-row class=" borderBottom">
-
-                        <ion-col size="12" class="cardContent boldText">Dachfläche benennen</ion-col>
-                        <ion-col size="12" class="cardContent">
-                            <input type="text" [(ngModel)]="newRoofName" class="settingsInputText" id="fname" name="fname" placeholder="Bezeichnung eintragen">
-                        </ion-col>
-                        <ion-col size="12" class=" ">
-                            <!--div class="settings-button" (click)="saveNewRoof()">Dachfläche erstellen</div-->
-                            <ion-button color="light" class="settings-button-primary" (click)="saveNewRoof()">Dachfläche erstellen</ion-button>
-                        </ion-col>
-
-                    </ion-row>
-
-                </ion-grid>
-
-
-            </div>
-        </div>
-
-
-        <div class="settings-card">
-            <ion-text color="light boxheader boldText">Standort</ion-text>
+            </ion-card> -->
 
             <ion-card color="transparent">
                 <ion-card-content class="lightBox">
                     <ion-grid>
-                        <ion-row *ngIf="latitude!=null || longitude!=null ">
-                            <ion-col size="2" class="cardContent cardContentLine paddingleft">Lat: </ion-col>
-                            <ion-col size="3" class="cardContent cardContentLine  "> {{latitude}}</ion-col>
-                            <ion-col size="2" class="cardContent cardContentLine paddingleft">Long:</ion-col>
-                            <ion-col size="3" class="cardContent cardContentLine  "> {{longitude}}</ion-col>
-                            <ion-col size="1" class="cardContent cardContentLine">
-                                <ion-icon (click)="deletePosition()" name="trash-outline"></ion-icon>
+                        <ion-row>
+                            <ion-col class="ion-status-col">
+                                <ion-text color="light">Service</ion-text>
                             </ion-col>
-                        </ion-row>
-                        <ion-row *ngIf="latitude==null || longitude==null ">
-                            <ion-col size=12>
-                                <ion-text color="light">Kein Standort gespeichert</ion-text>
+                            <ion-col class="ion-status-col" *ngIf="!serviceActive">
+                                <ion-text color="danger" style="font-weight: bold;">Nicht Aktiv</ion-text>
+                            </ion-col>
+                            <ion-col class="ion-status-col" *ngIf="serviceActive">
+                                <ion-text color="success" style="font-weight: bold;">Aktiv</ion-text>
                             </ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-card-content>
             </ion-card>
-            <ion-button color="light" class="settings-button-primary" (click)="getCurrentPosition()">Standort ermitteln</ion-button>
-            <ion-button color="light" class="settings-button-primary" (click)="setTestPosition()">Teststandort verwenden</ion-button>
-            <ion-grid>
-                <ion-row [@fadeInOut] *ngIf="showNewPositionInfo" class="">
-                    <ion-col size="12" class="cardContent ion-text-center ">
-                        <ion-text color="light">Standort ermittelt </ion-text>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
         </div>
 
+        <!-- Verbindung -->
         <div class="settings-card connectionCard">
             <ion-text color="light  boxheader boldText">Verbindung</ion-text>
-
+        
             <ion-card color="transparent">
                 <ion-card-content class="lightBox">
                     <ion-grid>
@@ -147,13 +84,14 @@
                     </ion-grid>
                 </ion-card-content>
             </ion-card>
-
+        
             <ion-card color="transparent" *ngIf="savedIpAdress==null || savedIpAdress=='' ">
                 <ion-card-content class="ion-text-center">
                     <ion-row class="">
-
+        
                         <ion-col offset="2" size="8" class=" ">
-                            <input type="text" [(ngModel)]="ipAdress" class="settingsInputText ipInput" id="inputip" name="ip" placeholder="192.168.x.xx">
+                            <input type="text" [(ngModel)]="ipAdress" class="settingsInputText ipInput" id="inputip" name="ip"
+                                placeholder="192.168.x.xx">
                         </ion-col>
                     </ion-row>
                     <ng-container *ngIf="messageIPSuccess; then messageSuccessContainer;">
@@ -162,14 +100,158 @@
                     </ng-container>
                 </ion-card-content>
             </ion-card>
-
-
+        
+        
             <!--div class="settings-button" *ngIf="ipAdress != savedIpAdress" [@fadeInOut] (click)="saveNewIP()">IP ändern</div-->
-            <ion-button color="light" class="settings-button-primary" style="margin-top: 0;" *ngIf="ipAdress != savedIpAdress" [@fadeInOut] (click)="saveNewIP()">IP ändern</ion-button>
+            <ion-button color="light" class="settings-button-primary" style="margin-top: 0;" *ngIf="ipAdress != savedIpAdress"
+                [@fadeInOut] (click)="saveNewIP()">IP ändern</ion-button>
         </div>
 
+        <!-- Dachflächen     -->
+        <div class="settings-card">
+            <ion-text color="light  boxheader">Am Speicher angeschlossene Dachflächen</ion-text>
+            
+            <div *ngIf="serviceActive" >
+                <ion-card color="transparent" *ngFor="let roofArea of roofAreas; let i = index">
+                    <ion-card-content class="lightBox">
+                        <ion-grid>
+                            <ion-row>
+                                <ion-col size="5" class="cardContent cardContentLine  "> {{roofArea.name}}</ion-col>
+                                <ion-col size="3" class="cardContent cardContentLine paddingleft">Größe:</ion-col>
+                                <ion-col size="3" class="cardContent cardContentLine">{{roofArea.size}}m²</ion-col>
+                                <ion-col size="1" class="cardContent cardContentLine">
+                                    <ion-icon (click)="deleteRoof(i)" name="trash-outline"></ion-icon>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-card-content>
+                </ion-card>
+
+                <ion-grid>
+                    <ion-row class="borderBottom">
+                        <ion-col size="9" offset="1" class="cardContent ">
+                            <ion-text color="light boldText">Dachflächen insgesamt:</ion-text>
+                        </ion-col>
+                        <ion-col size="2" class="cardContent">{{combinedRooftopVolume}}m²</ion-col>
+                    </ion-row>
+                </ion-grid>
+
+                <ion-text color="light boldText">Benötigte IBC-Container</ion-text>
+
+                <ion-card color="transparent">
+                    <ion-card-content class="ion-text-center lightBox">
+                        <ion-text color="light boldText"> {{recommendedCOntainerAmount}}</ion-text>
+                    </ion-card-content>
+                </ion-card>
+
+                <p class="recommendText borderBottom">
+                    <ion-text color="light">Wir empfehlen einen IBC-Container pro 100m² Dachfläche.</ion-text>
+                </p>
+
+                <!--div class="settings-button" (click)="toggleContent()">Dachfläche hinzufügen</div-->
+
+                <ion-button *ngIf="serviceActive" color="light" class="settings-button-primary" (click)="toggleContent()">Dachfläche hinzufügen</ion-button>
 
 
+                <div class="content" *ngIf="!newRooftopIsCollapsed">
+
+                    <ion-text color="light boldText">Neue Dachfläche erstellen</ion-text>
+
+                    <ion-grid>
+
+                        <ion-card color="transparent">
+                            <ion-card-content>
+                                <ion-row class=" borderBottom">
+
+                                    <ion-col size="6" class="cardContent ">Dachfläche</ion-col>
+                                    <ion-col size="4" class="cardContent">
+                                        <input type="number" [(ngModel)]="newRoofSize" class="settingsInputText" id="fname" name="fname">
+                                    </ion-col>
+                                    <ion-col size="2" class="cardContent">m²</ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col size="10" offset="1">
+                                        <ion-text color="light">Diese bezieht sich auf die von oben betrachtete Dachfläche</ion-text>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-card-content>
+                        </ion-card>
+                        <ion-row class=" borderBottom">
+
+                            <ion-col size="12" class="cardContent boldText">Dachfläche benennen</ion-col>
+                            <ion-col size="12" class="cardContent">
+                                <input type="text" [(ngModel)]="newRoofName" class="settingsInputText" id="fname" name="fname" placeholder="Bezeichnung eintragen">
+                            </ion-col>
+                            <ion-col size="12" class=" ">
+                                <!--div class="settings-button" (click)="saveNewRoof()">Dachfläche erstellen</div-->
+                                <ion-button color="light" class="settings-button-primary" (click)="saveNewRoof()">Dachfläche erstellen</ion-button>
+                            </ion-col>
+
+                        </ion-row>
+
+                    </ion-grid>
+
+
+                </div>
+
+            </div>
+
+            <ion-card *ngIf="!serviceActive">
+                <div class="noConTitle">
+                    <p>
+                        Eine Verbindung zum Controller wird benötigt um Dachflächen zu konfigurieren.
+                    </p>
+                </div>
+            </ion-card>
+        </div>
+
+        <!-- Standort -->
+        <div class="settings-card connectionCard">
+            <ion-text color="light boxheader boldText">Standort</ion-text>
+            <div *ngIf="serviceActive">
+                <ion-card color="transparent">
+                    <ion-card-content class="lightBox">
+                        <ion-grid>
+                            <ion-row *ngIf="latitude!=null || longitude!=null ">
+                                <ion-col size="2" class="cardContent cardContentLine paddingleft">Lat: </ion-col>
+                                <ion-col size="3" class="cardContent cardContentLine  "> {{latitude}}</ion-col>
+                                <ion-col size="2" class="cardContent cardContentLine paddingleft">Long:</ion-col>
+                                <ion-col size="3" class="cardContent cardContentLine  "> {{longitude}}</ion-col>
+                                <ion-col size="1" class="cardContent cardContentLine">
+                                    <ion-icon (click)="deletePosition()" name="trash-outline"></ion-icon>
+                                </ion-col>
+                            </ion-row>
+                            <ion-row *ngIf="latitude==null || longitude==null">
+                                <ion-col size=12>
+                                    <ion-text color="light">Kein Standort gespeichert</ion-text>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-card-content>
+                </ion-card>
+                <ion-button *ngIf="latitude==null || longitude==null" color="light" class="settings-button-primary"
+                    (click)="getCurrentPosition()">Standort ermitteln</ion-button>
+                <ion-button *ngIf="latitude==null || longitude==null" color="light" class="settings-button-primary"
+                    (click)="setTestPosition()">Teststandort verwenden</ion-button>
+                <ion-grid>
+                    <ion-row [@fadeInOut] *ngIf="showNewPositionInfo" class="">
+                        <ion-col size="12" class="cardContent ion-text-center ">
+                            <ion-text color="light">Standort ermittelt </ion-text>
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+            </div>
+
+            <ion-card *ngIf="!serviceActive">
+                <div class="noConTitle">
+                    <p>
+                        Eine Verbindung zum Controller wird benötigt um den Standort zu konfigurieren.
+                    </p>
+                </div>
+            </ion-card>
+        </div>
+
+        <!-- Entleerungscharakteristik -->
         <div class="settings-card">
 
             <ion-text color="light boxheader boldText">Entleerungscharakteristik</ion-text>
@@ -177,18 +259,17 @@
             <ion-card color="transparent">
 
 
-                <ion-card-content>
+                <ion-card-content *ngIf="serviceActive">
                     <ion-grid>
                         <ion-row class="borderBottom">
                             <ion-col size="9" class="cardContent ">Entleerung ab Niederschlagshöhe (mm)</ion-col>
                             <ion-col size="3" class="cardContent">
-                                <input type="number" class="settingsInputText" [(ngModel)]="automationJSON.ppt_trigger_value" id="fname" name="fname">
+                                <input type="number" class="settingsInputText" [(ngModel)]="automationJSON.ppt_trigger_value" id="fname" name="fname" (change)="inputFieldChanged()" (focus)="inputFieldFocused()">
                             </ion-col>
                         </ion-row>
                         <ion-row class="borderBottom">
                             <ion-col size="9" class="cardContent ">Zeitraum der Niederschlagshöhe (min)</ion-col>
                             <ion-col size="3" class="cardContent">
-
                                 <ion-select justify="end" class="ion-no-padding" [ngModel]="automationJSON.ppt_trigger_timerange" (ngModelChange)="update_ppt_trigger_timerange($event)" ok-text="OK" cancel-text="Abbrechen">
                                     <ng-container *ngFor="let timeframe of possibleRainTimeframes">
                                         <ion-select-option class="ion-no-padding" value="{{timeframe}}">{{timeframe}}</ion-select-option>
@@ -199,7 +280,6 @@
                         <ion-row class="borderBottom">
                             <ion-col size="9" class="cardContent ">Entleerung vor vorhergesagten Regenbeginn (min)</ion-col>
                             <ion-col size="3" class="cardContent">
-
                                 <ion-select justify="end" class="ion-no-padding" [ngModel]="automationJSON.preemptive_drain_time" (ngModelChange)="update_preemptive_drain_time($event)" ok-text="OK" cancel-text="Abbrechen">
                                     <ng-container *ngFor="let timeframe of possibleRainTimeframes">
                                         <ion-select-option class="ion-no-padding" value="{{timeframe}}">{{timeframe}}</ion-select-option>
@@ -210,7 +290,6 @@
                         <ion-row>
                             <ion-col size="9" class="cardContent ">Füllstand nach Entleerung (%)</ion-col>
                             <ion-col size="3" class="cardContent">
-
                                 <ion-select justify="end" class="ion-no-padding" [ngModel]="automationJSON.auto_drain_amount" (ngModelChange)="update_drainamount_event($event)" ok-text="OK" cancel-text="Abbrechen">
                                     <ng-container *ngFor="let drainAmount of possibleDrainAmount">
                                         <ion-select-option class="ion-no-padding" value="{{drainAmount}}">{{drainAmount}}</ion-select-option>
@@ -219,7 +298,7 @@
                             </ion-col>
                         </ion-row>
 
-                        <ion-row class="ion-justify-content-center">
+                        <ion-row class="ion-justify-content-center" *ngIf="inputFieldsChanged">
                             <ion-col size="8" class="cardContent">
                                 <!--div id="saveAutomation-alert" class="settings-button" (click)="saveAutomation()">Speichern</div-->
                                 <ion-button color="light" id="saveAutomation-alert" class="settings-button-primary" (click)="saveAutomation()">Speichern</ion-button>
@@ -232,10 +311,18 @@
 
                     </ion-grid>
                 </ion-card-content>
+                <ion-card-content *ngIf="!serviceActive">
+                    <div class="noConTitle">
+                        <p>
+                            Eine Verbindung zum Controller wird benötigt um die Entleerungscharakteristik zu konfigurieren.
+                        </p>
+                    </div>
+                </ion-card-content>
 
             </ion-card>
         </div>
 
+        <!-- Dashboardanzeigen -->
         <div class="settings-card">
             <ion-text color="light  boxheader boldText">Dashboard-Umfang</ion-text>
             <div class="settings-button lightButton" [ngClass]="{'settings-button-active' : checkActiveDashboardElement('waterlevel'),'settings-button-inactive' : !checkActiveDashboardElement('waterlevel')}" (click)="changeActiveDashboardElemend('waterlevel')">Füllstands-Historie</div>
