@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Geolocation } from '@capacitor/geolocation'
 import { Capacitor } from '@capacitor/core'
-import { Subscription, interval, Observable, throwError, timer} from 'rxjs';
-import { delay, catchError, take } from 'rxjs/operators';
+import { Subscription, interval} from 'rxjs';
 import { DataStorageService } from '../services/data-storage.service'
 import { ApiService } from '../services/api.service'
 import {animate, style, transition, trigger} from "@angular/animations";
@@ -24,7 +23,7 @@ import { StateService } from '../services/state.service';
     ])
   ],
 })
-export class SettingsPage implements OnInit {
+export class SettingsPage implements OnInit, OnDestroy {
   debug = false
   roofAreas
   public roofAreaCombined
@@ -67,12 +66,13 @@ export class SettingsPage implements OnInit {
   updatingUserConfig:boolean = false;
   updatingAutomationConfig:boolean = false;
   inputFieldsChanged: boolean = false;
+  private statusSubscription: Subscription;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
     private stateService: StateService,
   ) {
-    this.pingServiceActive();
+    // this.pingServiceActive();
     this.dataStorageService
       .getStoredData('activeDashboardElements')
       .then((activeDashboardElements) => {
@@ -90,7 +90,7 @@ export class SettingsPage implements OnInit {
     this.roofAreas = this.getRoofArea()
     this.roofAreaCombined = this.getCombinedRoofArea()
     this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
-    this.stateService.getServiceActive().subscribe(active => {
+    this.statusSubscription = this.stateService.getServiceActive().subscribe(active => {
       this.serviceActive = active;
     });
   }
@@ -101,7 +101,7 @@ export class SettingsPage implements OnInit {
       this.tracking_short = interval(5000)
       .subscribe(() => {
         this.initIpAddress();
-        this.pingServiceActive();
+        // this.pingServiceActive();
         this.roofAreas = this.getRoofArea()
         this.roofAreaCombined = this.getCombinedRoofArea()
         this.recommendedCOntainerAmount = this.getRecommendedContainerAmount()
@@ -114,6 +114,10 @@ export class SettingsPage implements OnInit {
   ngOnDestroy() {
     if(this.tracking_short){
       this.tracking_short.unsubscribe();
+    }
+
+    if (this.statusSubscription) {
+      this.statusSubscription.unsubscribe();
     }
   }
 
@@ -243,7 +247,7 @@ export class SettingsPage implements OnInit {
       'ipadress',
       this.ipAdress,
     )
-
+    
     //console.log(localStorage.getItem("playerID"))
     await this.apiService.setCorrectIPFromSaved();
     this.savedIpAdress = this.ipAdress
@@ -265,7 +269,7 @@ export class SettingsPage implements OnInit {
       this.startTimerIPRedAlert()
       localStorage.removeItem("ipChange");
     }
-
+    this.stateService.pingServiceActive();
     await this.apiService.sendPlayerID();
   }
   startTimerIPGreenAlert(){
@@ -537,23 +541,20 @@ export class SettingsPage implements OnInit {
   handleSettingsRefresh(event) {
     this.getUserConfig();
     this.getAutomationConfig()
-    this.pingServiceActive();
+    // this.pingServiceActive();
     this.displayRefreshNotification(event);
   }
 
-  pingServiceActive() {
-    this.apiService.checkServiceStatus().pipe(
-      catchError(error => {
-        console.error('Error occurred:', error);
-        return timer(5000).pipe(take(3)); // Retry after 5 seconds, up to 3 times
-      })
-    ).subscribe({
-      next: (data) => {
-        this.stateService.updateServiceActive(true);
-      },
-      error: (error) => {
-        this.stateService.updateServiceActive(false);
-      },
-    });
-  }
+  // pingServiceActive() {
+  //   this.apiService.checkServiceStatus().subscribe({
+  //     next: (data) => {
+  //       console.log("settings pingServiceActive data: ", data);
+  //       this.stateService.updateServiceActive(true);
+  //     },
+  //     error: (error) => {
+  //       console.log("settings pingServiceActive error: ", error);
+  //       this.stateService.updateServiceActive(false);
+  //     },
+  //   });
+  // }
 }
