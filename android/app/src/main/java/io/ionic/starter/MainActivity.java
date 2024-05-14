@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package de.oowv.braintank;
 
 import com.getcapacitor.BridgeActivity;
 

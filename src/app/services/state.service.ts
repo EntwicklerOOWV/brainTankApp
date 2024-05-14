@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, interval, Subscription } from 'rxjs';
 import { ApiService } from './api.service';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 
@@ -10,11 +10,31 @@ export class StateService {
   private location = new BehaviorSubject<{ latitude: number, longitude: number } | null>(null);
   private roofAreas = new BehaviorSubject<any[]>([]);
   private precipitationValues = new BehaviorSubject<any[]>([]);
+  private statusCheckInterval = 1500;   
+  private statusSubscription: Subscription;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) {
+    this.startPinging();
+  }
 
-  getRoofAreas(): Observable<any[]> {
-    return this.roofAreas.asObservable();
+  startPinging() {
+    this.statusSubscription = interval(this.statusCheckInterval).subscribe(() => {
+      this.pingServiceActive();
+    });
+  }
+
+  pingServiceActive(){
+    this.apiService.checkServiceStatus().pipe(
+      tap(data => {
+        console.log('Service status check successful', data);
+        this.updateServiceActive(true);
+      }),
+      catchError(error => {
+        console.error('Service status check failed', error);
+        this.updateServiceActive(false);
+        return [];
+      })
+    ).subscribe();
   }
 
   getServiceActive(): Observable<boolean> {
@@ -23,6 +43,10 @@ export class StateService {
 
   updateServiceActive(active: boolean): void {
     this.serviceActive.next(active);
+  }
+
+  getRoofAreas(): Observable<any[]> {
+    return this.roofAreas.asObservable();
   }
 
   setLocation(latitude: number, longitude: number): void {
@@ -49,5 +73,11 @@ export class StateService {
         return [];  // Returning an empty array as a fallback
       })
     ).subscribe();  // This ensures that the API call is made and results are processed
+  }
+
+  ngOnDestroy() {
+    if (this.statusSubscription) {
+      this.statusSubscription.unsubscribe();
+    }
   }
 }

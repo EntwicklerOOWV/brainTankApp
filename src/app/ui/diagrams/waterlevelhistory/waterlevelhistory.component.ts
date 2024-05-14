@@ -47,7 +47,7 @@ export class WaterlevelhistoryComponent implements OnInit {
     }
   }
   createChart(){
-    console.log("create chart")
+    // console.log("create chart")
     this.initialiseChartMetadata()
     this.createLineChart()
   }
@@ -181,7 +181,6 @@ export class WaterlevelhistoryComponent implements OnInit {
     })
   }
   handleChange(e) {
-    //console.log('handle change: ')
     this.selectedTimeframeWaterlevel = e.detail.value
     this.dataStorageService.set(
       'selectedtimeframewaterlevel'+this.typeOfDiagramm,
@@ -190,7 +189,6 @@ export class WaterlevelhistoryComponent implements OnInit {
     this.getData();
   }
   updateChart() {
-    console.log('Test Update');
     var parsedData:any =[]
     parsedData = this.correctChartDataSet.map((dataset) => Math.floor(dataset.average*this.datasetMultiplier))
     this.correctChartLabels = this.correctChartDataSet.map((dataset) => dataset.label)
@@ -253,13 +251,13 @@ export class WaterlevelhistoryComponent implements OnInit {
     .customGetRequest(endpointUrl+this.chartUrl)
     .subscribe({
       next: (data) => {
-        console.log('response data getdiadata: ' + JSON.stringify(data))
+        // console.log('response data getdiadata: ' + JSON.stringify(data))
         this.correctChartDataSet = data
         this.selectedTimeframeWaterlevel=this.selectedTimeframeWaterlevel[0]?this.selectedTimeframeWaterlevel[0]:this.selectedTimeframeWaterlevel
         this.updateChart()
         var parsedData:any =[]
         parsedData = this.correctChartDataSet.map((dataset) => Math.floor(dataset.average*this.datasetMultiplier))
-        console.log("parsed data: "+JSON.stringify(parsedData))
+        // console.log("parsed data: "+JSON.stringify(parsedData))
         this.setMaxValues(parsedData)
       },
       error: (error) => {
@@ -290,9 +288,11 @@ export class WaterlevelhistoryComponent implements OnInit {
       this.updateChart();
     });
   }
+
   ionViewDidLeave(){
     this.checkConnection.unsubscribe();
   }
+  
   setMaxValues(data:[] ) {
     // Ensure that the data array is not empty
     if (data.length === 0) {

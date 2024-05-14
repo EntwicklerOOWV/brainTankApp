@@ -1,8 +1,7 @@
-import { Component,ViewChild  } from '@angular/core';
+import { Component,ViewChild, OnDestroy, OnInit  } from '@angular/core';
 import { DataStorageService } from '../services/data-storage.service';
 import { ApiService } from '../services/api.service'
-import { Subscription, interval, Observable, throwError, timer} from 'rxjs';
-import { delay, catchError, take } from 'rxjs/operators';
+import { Subscription, interval, Observable} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
@@ -14,7 +13,7 @@ import { StateService } from '../services/state.service';
   styleUrls: ['home.page.scss'],
 })
 
-export class HomePage {
+export class HomePage implements OnInit, OnDestroy {
   @ViewChild('waterlevel') waterlevel;
   @ViewChild('projectedPPT') projectedPPT;
   @ViewChild('actualPPT') actualPPT;
@@ -35,6 +34,7 @@ export class HomePage {
   ipAddress:any;
   homeRefreshFinished:boolean = false;
   private precipitationSubscription: Subscription;
+  private statusSubscription: Subscription;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
@@ -42,7 +42,7 @@ export class HomePage {
     private storage: Storage,
     private stateService: StateService
   ){  
-    this.pingServiceActive();
+    // this.pingServiceActive();
     this.loadTermsAccepted();
     this.getDashboardData();
     this.getDashboardPrecipitationValues();
@@ -56,10 +56,13 @@ export class HomePage {
       this.serviceActive = active;
     });
 
+    this.statusSubscription = this.stateService.getServiceActive().subscribe(active => {
+      this.serviceActive = active;
+    });
+
     if(this.tracking_short == null){
     this.tracking_short = interval(5000)
       .subscribe(() => {
-        this.pingServiceActive();
         this.getDashboardData();
         this.updateIpAddress();
       });
@@ -87,7 +90,16 @@ export class HomePage {
   }
 
   ionViewWillEnter(){
+    console.log("ionViewWillEnter");
     this.updateIpAddress();
+    this.stateService.getServiceActive().subscribe({
+      next: (active) => {
+        this.serviceActive = active;
+      },
+      error: (error) => {
+        console.log("error updating service active value in home screen");
+      }
+    });
     this.stateService.getLocation().subscribe({
       next: (location) => {
         this.latitude = location?.latitude;
@@ -113,6 +125,9 @@ export class HomePage {
     }
     if (this.precipitationSubscription) {
       this.precipitationSubscription.unsubscribe();
+    }
+    if (this.statusSubscription) {
+      this.statusSubscription.unsubscribe();
     }
   }
   getJsonData(url: string): Observable<any> {
@@ -231,19 +246,16 @@ export class HomePage {
     this.displayRefreshNotification(event);
   }
 
-  pingServiceActive() {
-    this.apiService.checkServiceStatus().pipe(
-      catchError(error => {
-        console.error('Error occurred:', error);
-        return timer(5000).pipe(take(3)); // Retry after 5 seconds, up to 3 times
-      })
-    ).subscribe({
-      next: (data) => {
-        this.stateService.updateServiceActive(true);
-      },
-      error: (error) => {
-        this.stateService.updateServiceActive(false);
-      },
-    });
-  }
+  // pingServiceActive() {
+  //   this.apiService.checkServiceStatus().subscribe({
+  //     next: (data) => {
+  //       console.log("home pingServiceActive data: ", data);
+  //       this.stateService.updateServiceActive(true);
+  //     },
+  //     error: (error) => {
+  //       console.log("home pingServiceActive error: ", error);
+  //       this.stateService.updateServiceActive(false);
+  //     },
+  //   });
+  // }
 }

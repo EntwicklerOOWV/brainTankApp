@@ -24,8 +24,14 @@ export class ApiService {
   drainCompleteUrl:any = "threshold_drain/1"
   playerIDUrl:any ="update_player_ids"
   getServiceStatusUrl:any = "get_service_status"
+  sentPlayerIDs: Set<string>;
 
-  constructor(private http: HttpClient,    private dataStorageService: DataStorageService    ) {
+  constructor(
+    private http: HttpClient,    
+    private dataStorageService: DataStorageService    
+  ) 
+  {
+    this.sentPlayerIDs = new Set();
     this.setCorrectIPFromSaved();
   }
 
@@ -39,27 +45,40 @@ export class ApiService {
     this.dataStorageService
     .getStoredData('ipadress')
     .then((ipadress) => {
+      console.log("setCorrectIpFromSaved ipadress: "+ipadress)
       if (ipadress != null) {
         localStorage.setItem("ipChange", "Success")
         this.basicUrl = "http://"+ipadress+this.port+"/"
       }else{
         localStorage.setItem("ipChange", "DefaultURLSet")
-        this.basicUrl = null;
+        this.basicUrl = "";
       }
     })
   }
 
   sendPlayerID() {
-    let payload = {
-      playerID: localStorage.getItem("playerID"),
+    const playerID = localStorage.getItem("playerID");
+
+    // Check if playerID is null, "undefined", or already sent
+    if (playerID === null || playerID === "undefined" || this.sentPlayerIDs.has(playerID)) {
+      console.error("Player ID is null, undefined, or already sent");
+      return; // Exit the function if playerID is not valid or already sent
     }
-    //console.log("Player ID Sent " + playerID);
-    return this.http.post(this.basicUrl+this.playerIDUrl,payload)
+
+    let payload = {
+      playerID: playerID,
+    };
+
+    return this.http.post(this.basicUrl + this.playerIDUrl, payload)
       .subscribe(
-        data => console.log("Got data", data),
+        data => {
+          console.log("Got data", data);
+          this.sentPlayerIDs.add(playerID);  // Add playerID to the set after successful send
+        },
         error => console.error("Got error", error)
       );
   }
+
 
   getWaterLevel(interval:string="") {
     var correctEndpoint = "waterlevelhistory.json"
@@ -86,6 +105,7 @@ export class ApiService {
   }
 
   getUserConfig(){
+    console.log("getuserConfig: "+this.basicUrl+this.settingsUrl)
     return this.http.get(this.basicUrl+this.settingsUrl);
   }
 
@@ -172,6 +192,7 @@ export class ApiService {
   }
 
   checkServiceStatus(){
+    console.log("checkServiceStatus: "+this.basicUrl+this.getServiceStatusUrl)
     return this.http.get(this.basicUrl+this.getServiceStatusUrl)
   }
 
