@@ -64,7 +64,9 @@ ion-button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  z-index: 9999
+  z-index: 9999;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .noConTitle {

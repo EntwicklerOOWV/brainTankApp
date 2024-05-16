@@ -65,44 +65,44 @@ export class WaterlevelhistoryComponent implements OnInit {
         this.chartUrl ="?column=waterlevel"
         this.maxValue = 1000;
         this.stepSize = 200;
-        this.unitName="L"
+        this.unitName=" L"
         break
 
       case 'projectedPPT':
         this.chartUrl ="?column=projectedPPT"
-        this.maxValue = 15;
-        this.stepSize = 15/5;
+        this.maxValue = this.parsedMaxVal;
+        this.stepSize = this.parsedMaxVal/5;
         this.datasetMultiplier=1;
-        this.unitName="ml"
+        this.unitName=" mm"
         break
 
       case 'actualPPT':
         this.chartUrl ="?column=actualPPT"
-        this.maxValue = 15;
-        this.stepSize = 15/5;
+        this.maxValue = this.parsedMaxVal;
+        this.stepSize = this.parsedMaxVal/5;
         this.datasetMultiplier=1;
-        this.unitName="ml"
+        this.unitName=" mm"
         break
 
       case 'overflow':
         this.chartUrl ="?column=overflow"
         this.maxValue = 1000;
         this.stepSize = 100;
-        this.unitName="L"
+        this.unitName=" L"
         break
 
       case 'stored':
         this.chartUrl ="?column=stored"
         this.maxValue = 1000;
         this.stepSize = 100;
-        this.unitName="L"
+        this.unitName=" L"
         break
 
       case 'drained':
         this.chartUrl ="?column=used"
         this.maxValue = 1000
         this.stepSize = 100;
-        this.unitName="L"
+        this.unitName=" L"
         break
 
       default:
