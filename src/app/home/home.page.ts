@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { CheckboxCustomEvent } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { StateService } from '../services/state.service';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -35,15 +36,16 @@ export class HomePage implements OnInit, OnDestroy {
   homeRefreshFinished:boolean = false;
   private precipitationSubscription: Subscription;
   private statusSubscription: Subscription;
+  showTerms:boolean=true;
   constructor(
     private dataStorageService: DataStorageService,
     private apiService: ApiService,
     private http: HttpClient,
     private storage: Storage,
-    private stateService: StateService
+    private stateService: StateService,
+    private platform:Platform
   ){  
-    // this.pingServiceActive();
-    this.loadTermsAccepted();
+    this.checkTermsVisibility();
     this.getDashboardData();
     this.getDashboardPrecipitationValues();
   }
@@ -222,6 +224,18 @@ export class HomePage implements OnInit, OnDestroy {
       await this.acceptTerms();
     }
   }
+
+  async checkTermsVisibility() {
+
+    if(this.platform.is('ios')){
+      this.showTerms = true;
+      this.termsAccepted = true;
+    } else {
+      await this.loadTermsAccepted();
+      this.showTerms = !this.termsAccepted;
+    }
+  }
+
   async loadTermsAccepted() {
     // Load the value from storage. If it doesn't exist, default to false.
     this.termsAccepted = (await this.storage.get('termsAccepted')) || false;
