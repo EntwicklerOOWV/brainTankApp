@@ -230,8 +230,10 @@ export class HomePage implements OnInit, OnDestroy {
   async checkTermsVisibility() {
 
     if(this.platform.is('ios')){
+      console.log("Platform is iOS")
       this.showTerms = false;
       this.termsAccepted = true;
+      console.log("checkTermsVisibility || termsAccepted: ", this.termsAccepted, " showTerms: ", this.showTerms, " serviceActive: ", this.serviceActive);
     } else {
       await this.loadTermsAccepted();
       this.showTerms = !this.termsAccepted;
