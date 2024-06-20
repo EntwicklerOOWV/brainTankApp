@@ -52,6 +52,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.checkTermsVisibility();
     this.loadTermsAccepted();
 
     this.stateService.getServiceActive().subscribe(active => {
