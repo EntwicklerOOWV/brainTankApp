@@ -31,7 +31,7 @@ export class HomePage implements OnInit, OnDestroy {
   isDraining = false
   tracking_short:Subscription;
   serviceActive:boolean = false;
-  termsAccepted:boolean;
+  termsAccepted:boolean = false;
   ipAddress:any;
   homeRefreshFinished:boolean = false;
   private precipitationSubscription: Subscription;
@@ -93,6 +93,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter(){
+    console.log("ionViewWillEnter: termsAccepted: ", this.termsAccepted, " showTerms: ", this.showTerms, " serviceActive: ", this.serviceActive);
     console.log("ionViewWillEnter");
     this.updateIpAddress();
     this.stateService.getServiceActive().subscribe({
