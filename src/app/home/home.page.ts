@@ -231,12 +231,12 @@ export class HomePage implements OnInit, OnDestroy {
 
     if(this.platform.is('ios')){
       console.log("Platform is iOS")
-      this.showTerms = false;
+      // this.showTerms = false;
       this.termsAccepted = true;
-      console.log("checkTermsVisibility || termsAccepted: ", this.termsAccepted, " showTerms: ", this.showTerms, " serviceActive: ", this.serviceActive);
+      console.log("checkTermsVisibility || termsAccepted: ", this.termsAccepted, " serviceActive: ", this.serviceActive);
     } else {
       await this.loadTermsAccepted();
-      this.showTerms = !this.termsAccepted;
+      // this.showTerms = !this.termsAccepted;
     }
   }
 
