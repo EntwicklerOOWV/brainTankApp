@@ -19,7 +19,7 @@
       </div>
     </ion-card>
 
-    <div class="terms-settings-card" *ngIf="showTerms">
+    <div class="terms-settings-card" *ngIf="!termsAccepted">
       <p class="terms-description">
         <ion-text color="light">Datenschutz- und Nutzungsbedingungen</ion-text>
       </p>
@@ -27,7 +27,7 @@
       <div class="content" *ngIf="!termsAccepted">
         <div class="terms-text-wrap">
           <p>
-            Willkommen beim SmartWaterTank!
+            Willkommen beim b:rainTank!
           </p>
 
           <p>

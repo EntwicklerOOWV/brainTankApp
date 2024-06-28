@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'swat.ionic.qf',
-  appName: 'SmartWaterTankApp',
+  appName: 'b:rainTank',
   webDir: 'www',
   server: {
     androidScheme: 'http',

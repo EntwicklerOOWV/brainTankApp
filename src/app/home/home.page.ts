@@ -31,7 +31,7 @@ export class HomePage implements OnInit, OnDestroy {
   isDraining = false
   tracking_short:Subscription;
   serviceActive:boolean = false;
-  termsAccepted:boolean;
+  termsAccepted:boolean = false;
   ipAddress:any;
   homeRefreshFinished:boolean = false;
   private precipitationSubscription: Subscription;
@@ -52,7 +52,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    this.loadTermsAccepted();
+    this.checkTermsVisibility();
+    // this.loadTermsAccepted();
 
     this.stateService.getServiceActive().subscribe(active => {
       this.serviceActive = active;
@@ -92,6 +93,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter(){
+    console.log("ionViewWillEnter: termsAccepted: ", this.termsAccepted, " showTerms: ", this.showTerms, " serviceActive: ", this.serviceActive);
     console.log("ionViewWillEnter");
     this.updateIpAddress();
     this.stateService.getServiceActive().subscribe({
@@ -228,8 +230,10 @@ export class HomePage implements OnInit, OnDestroy {
   async checkTermsVisibility() {
 
     if(this.platform.is('ios')){
+      console.log("Platform is iOS")
       this.showTerms = false;
       this.termsAccepted = true;
+      console.log("checkTermsVisibility || termsAccepted: ", this.termsAccepted, " showTerms: ", this.showTerms, " serviceActive: ", this.serviceActive);
     } else {
       await this.loadTermsAccepted();
       this.showTerms = !this.termsAccepted;
